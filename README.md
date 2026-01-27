@@ -3,8 +3,8 @@ CSIS 4495: Remote Emergency Room Triage and Telemedicine Systems
 Academic Research Prototype & Simulation
 
 ## Team Members
-Bright Ekeator (Team Lead) – 300318200  
-AJ Encino – 300381971
+Bright Ekeator (Team Lead) – 300318200  - ekeatorb@student.douglascollege.ca
+AJ Encino – 300381971 - encinaa@student.douglascollege.ca
 
 ## Project Overview
 This project presents an academic research prototype and simulation of a web-based Remote Emergency Room (ER) Triage and Telemedicine System. The system is designed to address emergency department overcrowding by enabling pre-hospital patient triage through a secure web interface that supports scenario-based patient intake, queue management, and clinician video consultation with human-in-the-loop overrides.
