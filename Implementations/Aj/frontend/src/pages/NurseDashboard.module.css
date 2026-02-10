@@ -1,0 +1,188 @@
+.wrap {
+  max-width: 100%;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.head h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--text);
+}
+
+.headActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.resetOrder {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.resetOrder:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.auditLink {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.auditLink:hover {
+  color: var(--accent);
+}
+
+.intro {
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.55;
+  font-size: 0.9rem;
+}
+
+.loading,
+.empty {
+  color: var(--text-muted);
+  padding: 2rem 0;
+  font-size: 0.95rem;
+}
+
+.queueSection h2 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: var(--text-subtle);
+  letter-spacing: 0.02em;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.queueSection {
+  margin-bottom: 1.75rem;
+}
+
+.card {
+  display: flex;
+  align-items: stretch;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition), background var(--transition);
+}
+.card:hover {
+  border-color: var(--border-strong);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.reorder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 0.5rem;
+  border-right: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.callBtns {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.5rem;
+  border-right: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.callBtn {
+  padding: 0.35rem 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.callBtn:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.moveBtn {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+.moveBtn:hover {
+  color: var(--accent);
+}
+
+.cardLink {
+  flex: 1;
+  display: block;
+  padding: 1rem 1.2rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--transition);
+  min-width: 0;
+}
+.cardLink:hover {
+  background: rgba(255, 255, 255, 0.03);
+  text-decoration: none;
+  color: var(--text);
+}
+
+.level {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.22rem 0.5rem;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+.complaint {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.meta {
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+}
+
+.more {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
