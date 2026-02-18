@@ -1,0 +1,87 @@
+:root {
+  --bg: #080c10;
+  --bg-soft: #0d1218;
+  --surface: #141c24;
+  --surface-elevated: #1a2430;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.1);
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --accent: #22d3ee;
+  --accent-hover: #67e8f9;
+  --accent-dim: rgba(34, 211, 238, 0.12);
+  --accent-glow: rgba(34, 211, 238, 0.4);
+  --success: #34d399;
+  --success-dim: rgba(52, 211, 153, 0.18);
+  --warning: #fbbf24;
+  --warning-dim: rgba(251, 191, 36, 0.18);
+  --danger: #f87171;
+  --danger-dim: rgba(248, 113, 113, 0.12);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', monospace;
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.35);
+  --transition: 0.25s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -30%, rgba(34, 211, 238, 0.12), transparent 50%),
+    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(34, 211, 238, 0.06), transparent 45%),
+    radial-gradient(ellipse 60% 50% at 0% 80%, rgba(34, 211, 238, 0.04), transparent 45%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, rgba(8, 12, 16, 0.98), var(--bg));
+  background-attachment: fixed;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover {
+  color: var(--accent-hover);
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+::selection {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
