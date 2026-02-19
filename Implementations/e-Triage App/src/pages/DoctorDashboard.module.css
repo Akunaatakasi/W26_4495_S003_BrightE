@@ -1,0 +1,109 @@
+.wrap {
+  max-width: 100%;
+}
+
+.head {
+  margin-bottom: 0.75rem;
+}
+
+.head h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--text);
+}
+
+.intro {
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.55;
+  font-size: 0.9rem;
+}
+
+.loading,
+.empty {
+  color: var(--text-muted);
+  padding: 2rem 0;
+  font-size: 0.95rem;
+}
+
+.section h2 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: var(--text-subtle);
+  letter-spacing: 0.02em;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  transition: border-color var(--transition), background var(--transition);
+}
+.card:hover {
+  border-color: var(--border-strong);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.level {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.22rem 0.5rem;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+.complaint {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.meta {
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+}
+
+.requestBtn {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
+  color: #0f1419;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+}
+.requestBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(34, 211, 238, 0.35);
+  color: #0f1419;
+}

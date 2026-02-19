@@ -1,0 +1,95 @@
+.wrap {
+  max-width: 100%;
+}
+
+.back {
+  margin-bottom: 0.85rem;
+}
+
+.back a {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.back a:hover {
+  color: var(--accent);
+}
+
+.wrap h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 420px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info,
+.triage {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 0.85rem;
+}
+
+.info h2,
+.triage h2 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.info p,
+.triage p {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+}
+
+.overrideNote {
+  color: var(--warning);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.loading {
+  color: var(--text-muted);
+  padding: 2rem 0;
+  font-weight: 500;
+}
+
+.actions {
+  margin-top: 1rem;
+}
+
+.backBtn {
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
+  color: #0f1419;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+}
+.backBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(34, 211, 238, 0.35);
+  color: #0f1419;
+}
