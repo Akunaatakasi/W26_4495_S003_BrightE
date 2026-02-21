@@ -1,0 +1,271 @@
+.wrap {
+  max-width: 100%;
+  padding: 0.5rem 0;
+}
+
+.wrap h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.intro {
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.55;
+  font-size: 0.9rem;
+}
+
+.form section {
+  margin-bottom: 1.5rem;
+}
+
+.form h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: var(--text);
+}
+
+.form .row {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.form .row label {
+  min-width: 100px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.form input[type="number"],
+.form input[type="text"],
+.form input[type="email"],
+.form select,
+.form textarea {
+  padding: 0.55rem 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 1rem;
+}
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.form textarea {
+  resize: vertical;
+  min-height: 76px;
+}
+
+.urgency {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.urgencyOption {
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+}
+
+.urgencyOption input {
+  margin-right: 0.45rem;
+}
+
+.symptoms {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+}
+
+.checkbox {
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox input {
+  margin-right: 0.5rem;
+}
+
+.form > button {
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #0f1419;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 4px 14px rgba(34, 211, 238, 0.3);
+  margin-top: 0.25rem;
+}
+.form > button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(34, 211, 238, 0.35);
+}
+.form > button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.result {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.25rem;
+  margin-top: 1rem;
+}
+
+.result .level {
+  font-size: 1.05rem;
+  margin-bottom: 0.85rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.result .note {
+  color: var(--text-muted);
+  margin-bottom: 1.1rem;
+  line-height: 1.55;
+  font-size: 0.9rem;
+}
+
+.result button {
+  padding: 0.55rem 1rem;
+  margin-right: 0.6rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #0f1419;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.result button.secondary {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+}
+.result button.secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.error {
+  padding: 0.65rem 0.85rem;
+  background: var(--danger-dim);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.otpCodeBox {
+  padding: 1.25rem 1.5rem;
+  background: var(--accent-dim);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+.otpCodeLabel {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.otpCodeValue {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: var(--accent);
+  margin: 0.5rem 0;
+  font-variant-numeric: tabular-nums;
+}
+.otpCodeBox .codeHint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.demoOtp {
+  padding: 0.75rem 1rem;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.demoOtp code {
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.demoOtp .codeHint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.otpActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.otpActions button.secondary {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  font-weight: 500;
+}
+.otpActions button.secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.verifiedAs {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+.linkBtn {
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.85rem;
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.linkBtn:hover {
+  color: var(--text);
+}

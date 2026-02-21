@@ -6,6 +6,12 @@ import { logAudit } from '../db/audit.js';
 
 const router = Router();
 
+function isDbConnectionError(e) {
+  const code = e.code || '';
+  const msg = (e.message || '').toLowerCase();
+  return code === 'ETIMEDOUT' || code === 'ECONNREFUSED' || code === 'ENOTFOUND' || msg.includes('connect etimedout') || msg.includes('timeout');
+}
+
 router.get('/my-cases', requireAuth, requireRole('patient'), async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -37,6 +43,9 @@ router.get('/completed', requireAuth, requireRole('doctor'), async (req, res) =>
     );
     res.json(rows.map((r) => ({ ...r, triage_label: TRIAGE_LABELS[r.final_triage_level ?? r.automated_triage_level] })));
   } catch (e) {
+    if (process.env.NODE_ENV !== 'production' && isDbConnectionError(e)) {
+      return res.json([]);
+    }
     res.status(500).json({ error: e.message });
   }
 });
@@ -54,6 +63,9 @@ router.get('/queue', requireAuth, requireRole('nurse'), async (req, res) => {
     );
     res.json(rows.map((r) => ({ ...r, triage_label: TRIAGE_LABELS[r.final_triage_level ?? r.automated_triage_level] })));
   } catch (e) {
+    if (process.env.NODE_ENV !== 'production' && isDbConnectionError(e)) {
+      return res.json([]);
+    }
     res.status(500).json({ error: e.message });
   }
 });
