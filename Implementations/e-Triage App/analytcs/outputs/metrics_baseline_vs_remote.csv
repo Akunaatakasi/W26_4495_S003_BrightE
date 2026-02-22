@@ -1,0 +1,7 @@
+metric,baseline,remote,difference_baseline_minus_remote
+avg_queue_length_proxy,0.041666666666666664,0.0,0.041666666666666664
+max_queue_length_proxy,1.0,0.0,1.0
+throughput_patients_per_hr_proxy,6.208333333333333,6.25,-0.04166666666666696
+avg_wait_time_min,74.94066801122025,52.96622829351497,21.97443971770528
+median_wait_time_min,75.5468043782518,53.2055116035012,22.341292774750606
+lwbs_rate,0.04,0.0,0.04
