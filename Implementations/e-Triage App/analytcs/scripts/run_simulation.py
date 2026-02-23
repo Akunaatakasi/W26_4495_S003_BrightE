@@ -155,14 +155,15 @@ def main():
     accuracy.to_csv(os.path.join(out_dir, "metrics_accuracy_override.csv"), index=False)
 
     # Print quick checkpoint to terminal
-    print("✅ Saved:")
+    print("Saved:")
     print(f"- {os.path.join('analytics','data','synthetic_cases.csv')}")
     print(f"- {os.path.join('analytics','outputs','metrics_baseline_vs_remote.csv')}")
     print(f"- {os.path.join('analytics','outputs','metrics_accuracy_override.csv')}")
-    print("\n📌 Quick results:")
+    print("\n Quick results:")
     print(metrics_df)
-    print("\n📌 Accuracy/override:")
+    print("\n Accuracy/override:")
     print(accuracy)
 
 if __name__ == "__main__":
     main()
+
