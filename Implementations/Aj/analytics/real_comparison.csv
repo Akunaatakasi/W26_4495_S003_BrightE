@@ -1,0 +1,6 @@
+metric,value_baseline,value_remote,improvement
+avg_wait_time_min,30.54,22.905,7.634999999999998
+median_wait_time_min,12.0,9.0,3.0
+lwbs_rate,0.0133333333333333,0.0093333333333333,0.004
+avg_lov_min,298.1933333333333,298.1933333333333,0.0
+boarding_mean_min,193.2,164.22,28.97999999999999
