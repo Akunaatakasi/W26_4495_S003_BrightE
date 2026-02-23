@@ -6,7 +6,7 @@ import pandas as pd
 df = pd.read_csv("../data/ed_sample_150.csv")
 df = df.replace([-7, -8, -9], np.nan)
 
-# ---- Remote triage assumptions (justify in methodology) ----
+
 WAIT_REDUCTION = 0.25     
 LWBS_REDUCTION = 0.30     
 BOARD_REDUCTION = 0.15   
@@ -35,5 +35,6 @@ print(pd.Series(metrics))
 os.makedirs("../outputs", exist_ok=True)
 out = pd.Series(metrics, name="value").reset_index().rename(columns={"index": "metric"})
 out.to_csv("../outputs/real_remote_metrics.csv", index=False)
+
 
 print("Saved: analytics/outputs/real_remote_metrics.csv")
