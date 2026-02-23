@@ -17,11 +17,12 @@ metrics = {
 if "BOARDED" in df.columns:
     metrics["boarding_mean_min"] = float(df["BOARDED"].mean())
 
-# Print
+
 print(pd.Series(metrics))
 
 # Save to outputs
 os.makedirs("../outputs", exist_ok=True)
 out_df = pd.Series(metrics, name="value").reset_index().rename(columns={"index": "metric"})
 out_df.to_csv("../outputs/real_baseline_metrics.csv", index=False)
+
 print("Saved: analytics/outputs/real_baseline_metrics.csv")
