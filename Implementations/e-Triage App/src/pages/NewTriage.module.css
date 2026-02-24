@@ -178,6 +178,12 @@
   font-size: 0.875rem;
   font-weight: 500;
 }
+.errorHint {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
 
 .otpCodeBox {
   padding: 1.25rem 1.5rem;

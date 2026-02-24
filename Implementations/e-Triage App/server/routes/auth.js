@@ -12,11 +12,13 @@ router.post('/register', async (req, res) => {
   try {
     const { email, password, role = 'patient', full_name } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
+    const emailNorm = String(email).trim().toLowerCase();
+    if (!emailNorm) return res.status(400).json({ error: 'Email is required' });
     const hash = await bcrypt.hash(password, 10);
     const { rows } = await pool.query(
       `INSERT INTO users (email, password_hash, role, full_name) VALUES ($1, $2, $3, $4)
        RETURNING id, email, role, full_name, created_at`,
-      [email, hash, ['nurse', 'doctor'].includes(role) ? role : 'patient', full_name || null]
+      [emailNorm, hash, ['nurse', 'doctor'].includes(role) ? role : 'patient', (full_name && String(full_name).trim()) || null]
     );
     const user = rows[0];
     await logAudit({ userId: user.id, action: 'user_register', resourceType: 'user', resourceId: user.id, details: { role: user.role } });
@@ -30,18 +32,18 @@ router.post('/register', async (req, res) => {
 
 const DEMO_STAFF_ID = 1;
 const DEMO_STAFF_USER = { id: DEMO_STAFF_ID, email: 'demo@demo.com', role: 'nurse', full_name: 'Demo Staff' };
-const USE_REAL_AUTH = process.env.USE_REAL_AUTH === 'true';
+const USE_DEMO_AUTH = process.env.USE_DEMO_AUTH === 'true';
 
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
-    // Demo: any email + password works, no DB
-    if (!USE_REAL_AUTH) {
+    if (USE_DEMO_AUTH) {
       const token = jwt.sign({ userId: DEMO_STAFF_ID, role: 'nurse' }, JWT_SECRET, { expiresIn: '7d' });
       return res.json({ user: { ...DEMO_STAFF_USER, email: (email && email.trim()) || DEMO_STAFF_USER.email }, token });
     }
-    const { rows } = await pool.query('SELECT id, email, password_hash, role, full_name FROM users WHERE email = $1', [email]);
+    const emailNorm = email.trim().toLowerCase();
+    const { rows } = await pool.query('SELECT id, email, password_hash, role, full_name FROM users WHERE LOWER(email) = $1', [emailNorm]);
     const user = rows[0];
     if (!user || !(await bcrypt.compare(password, user.password_hash)))
       return res.status(401).json({ error: 'Invalid email or password' });
@@ -55,7 +57,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/me', requireAuth, async (req, res) => {
   try {
-    if (!USE_REAL_AUTH && req.userId === DEMO_STAFF_ID) {
+    if (USE_DEMO_AUTH && req.userId === DEMO_STAFF_ID) {
       return res.json({ id: DEMO_STAFF_ID, email: DEMO_STAFF_USER.email, role: 'nurse', full_name: DEMO_STAFF_USER.full_name });
     }
     const { rows } = await pool.query('SELECT id, email, role, full_name FROM users WHERE id = $1', [req.userId]);

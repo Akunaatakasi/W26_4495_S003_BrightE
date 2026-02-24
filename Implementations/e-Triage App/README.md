@@ -1,4 +1,4 @@
-## e-Triage – Run Instructions
+##  e-Triage – Run Instructions
 
 This is a full‑stack web app for remote emergency department triage and nurse oversight, built with **React + Vite**, **Node/Express**, and **PostgreSQL**.
 

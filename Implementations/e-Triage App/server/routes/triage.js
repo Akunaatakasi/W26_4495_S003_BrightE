@@ -63,7 +63,9 @@ router.post('/submit-guest', async (req, res) => {
       triage_label: TRIAGE_LABELS[case_.automated_triage_level],
     });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    console.error('[triage submit-guest]', e);
+    const msg = e.message || e.code || String(e);
+    res.status(500).json({ error: msg || 'Server error' });
   }
 });
 
@@ -96,7 +98,9 @@ router.post('/submit', requireAuth, requireRole('patient'), async (req, res) => 
       triage_label: TRIAGE_LABELS[case_.automated_triage_level],
     });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    console.error('[triage submit]', e);
+    const msg = e.message || e.code || String(e);
+    res.status(500).json({ error: msg || 'Server error' });
   }
 });
 

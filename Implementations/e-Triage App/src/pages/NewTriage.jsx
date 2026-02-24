@@ -118,7 +118,14 @@ export default function NewTriage() {
           setSubmitting(false);
           return;
         }
-        if (DEMO_ONLY && guest_token === DEMO_GUEST_TOKEN) {
+        // Stale demo token from before backend was enabled is not a valid JWT
+        if (guest_token === DEMO_GUEST_TOKEN) {
+          clearGuestToken();
+          setResult({ error: 'Session expired. Please verify your email again with the OTP, then submit.' });
+          setSubmitting(false);
+          return;
+        }
+        if (DEMO_ONLY) {
           setResult({ id: 'demo', triage_label: 'Demo – not saved', note: 'Demo mode: triage was not sent to a server.' });
           clearGuestToken();
           setSubmitting(false);
@@ -130,7 +137,14 @@ export default function NewTriage() {
           body: JSON.stringify({ guest_token, ...payload }),
         });
         const data = await parseJson(res);
-        if (!res.ok) throw new Error(data.error || 'Submit failed');
+        const serverError = data && (data.error || data.message);
+        if (!res.ok) {
+          if (res.status === 400 && serverError && /invalid|expired|verify/i.test(serverError)) {
+            clearGuestToken();
+            throw new Error('Verification expired. Please verify your email again with the OTP, then submit.');
+          }
+          throw new Error(serverError || `Submit failed (${res.status}). Check that the backend is running.`);
+        }
         if (!data.id) throw new Error('Server returned invalid response.');
         setResult({ ...data, triage_label: data.triage_label });
         clearGuestToken();
@@ -225,7 +239,12 @@ export default function NewTriage() {
         </p>
       )}
       <p className={styles.intro}>Submit your symptoms and urgency. You will receive a preliminary triage level before arriving at the ED.</p>
-      {result?.error && <div className={styles.error}>{result.error}</div>}
+      {result?.error && (
+        <div className={styles.error}>
+          {result.error}
+          <p className={styles.errorHint}>Check the server terminal for details.</p>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className={styles.form}>
         <section>
           <h2>Demographics (optional)</h2>

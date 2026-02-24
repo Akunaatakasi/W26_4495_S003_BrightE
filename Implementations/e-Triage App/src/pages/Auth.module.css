@@ -1,0 +1,122 @@
+.wrap {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.wrap h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.form input,
+.form select {
+  padding: 0.65rem 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 1rem;
+}
+.form input:focus,
+.form select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.form button {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #0f1419;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+  box-shadow: 0 4px 14px rgba(34, 211, 238, 0.3);
+}
+.form button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(34, 211, 238, 0.35);
+}
+
+.error {
+  padding: 0.7rem 0.9rem;
+  background: var(--danger-dim);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.foot {
+  margin-top: 1.25rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.foot a {
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+.foot a:hover {
+  text-decoration: underline;
+}
+
+.demoBlock {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.demoLabel {
+  margin: 0 0 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-subtle);
+}
+
+.demoButtons {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.demoBtn {
+  padding: 0.5rem 0.9rem;
+  background: var(--accent-dim);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.demoBtn:hover {
+  background: rgba(34, 211, 238, 0.25);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
