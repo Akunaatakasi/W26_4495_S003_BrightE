@@ -20,8 +20,8 @@ REMOTE_WAIT_SD = 20
 LWBS_THRESHOLD_MIN = 120  # leave-without-being-seen if wait > 120 min
 
 # Nurse override 
-OVERRIDE_RATE = 0.12      # 12% overridden by nurse
-AI_ERROR_RATE = 0.18      # 18% AI acuity misclassification probability
+OVERRIDE_RATE = 0.12      
+AI_ERROR_RATE = 0.18      
 
 
 def clip_nonneg(x):
@@ -154,4 +154,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
