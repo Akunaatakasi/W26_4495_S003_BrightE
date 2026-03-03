@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { parseJson } from '../utils/api';
-import { getQueueOrder, setQueueOrder, ensureDemoData } from '../utils/mockApi';
+import { getQueueOrder, setQueueOrder } from '../utils/mockApi';
+import { predictPriority } from '../utils/priorityModel';
 import NurseCall from '../components/NurseCall';
 import { PhoneIcon, LaptopIcon } from '../components/CallIcons';
 import styles from './NurseDashboard.module.css';
@@ -18,7 +19,17 @@ function sortByOrder(cases, orderIds) {
     const ai = orderMap.get(a.id) ?? 9999;
     const bi = orderMap.get(b.id) ?? 9999;
     if (ai !== bi) return ai - bi;
-    return (a.automated_triage_level - b.automated_triage_level) || new Date(a.submitted_at) - new Date(b.submitted_at);
+    const mlA = a.ml_level ?? a.automated_triage_level;
+    const mlB = b.ml_level ?? b.automated_triage_level;
+    return (mlA - mlB) || ((b.ml_confidence ?? 0) - (a.ml_confidence ?? 0)) || new Date(a.submitted_at) - new Date(b.submitted_at);
+  });
+}
+
+function sortByMlPriority(cases) {
+  return [...cases].sort((a, b) => {
+    const mlA = a.ml_level ?? a.automated_triage_level;
+    const mlB = b.ml_level ?? b.automated_triage_level;
+    return (mlA - mlB) || ((b.ml_confidence ?? 0) - (a.ml_confidence ?? 0)) || new Date(a.submitted_at) - new Date(b.submitted_at);
   });
 }
 
@@ -27,40 +38,28 @@ export default function NurseDashboard() {
   const [orderIds, setOrderIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCall, setActiveCall] = useState(null); // { patientName, caseId, mode: 'audio'|'video' }
-  const { authFetch, token } = useAuth();
+  const { authFetch } = useAuth();
 
   const load = () => {
     authFetch('/patients/queue')
       .then((r) => parseJson(r))
       .then((data) => {
-        let list = Array.isArray(data) ? data : [];
-        const isDemo = token === 'demo-nurse' || token?.startsWith?.('demo-');
-        if (list.length === 0 && isDemo) {
-          list = ensureDemoData();
-        }
+        const list = (Array.isArray(data) ? data : []).map((c) => {
+          if (c.ml_level != null && c.ml_confidence != null) return c;
+          const ml = predictPriority(c);
+          return { ...c, ml_level: c.ml_level ?? ml.level, ml_confidence: c.ml_confidence ?? ml.confidence };
+        });
         setQueue(list);
         let order = getQueueOrder();
         if (order.length === 0 && list.length > 0) {
-          order = sortByOrder(list, []).map((c) => c.id);
+          order = sortByMlPriority(list).map((c) => c.id);
           setQueueOrder(order);
           setOrderIds(order);
         } else {
           setOrderIds(order);
         }
       })
-      .catch(() => {
-        if (token === 'demo-nurse' || token?.startsWith?.('demo-')) {
-          const list = ensureDemoData();
-          setQueue(list);
-          const order = list.length > 0 ? sortByOrder(list, []).map((c) => c.id) : [];
-          if (order.length > 0) {
-            setQueueOrder(order);
-            setOrderIds(order);
-          }
-        } else {
-          setQueue([]);
-        }
-      })
+      .catch(() => setQueue([]))
       .finally(() => setLoading(false));
   };
 
@@ -68,7 +67,7 @@ export default function NurseDashboard() {
     load();
     const id = setInterval(load, 20000);
     return () => clearInterval(id);
-  }, [authFetch, token]);
+  }, [authFetch]);
 
   const orderedQueue = useMemo(() => sortByOrder(queue, orderIds), [queue, orderIds]);
 
@@ -83,7 +82,7 @@ export default function NurseDashboard() {
   };
 
   const resetOrder = () => {
-    const defaultOrder = [...queue].sort((a, b) => (a.automated_triage_level - b.automated_triage_level) || new Date(a.submitted_at) - new Date(b.submitted_at)).map((c) => c.id);
+    const defaultOrder = sortByMlPriority(queue).map((c) => c.id);
     setQueueOrder(defaultOrder);
     setOrderIds(defaultOrder);
   };
@@ -94,6 +93,8 @@ export default function NurseDashboard() {
   const submitted = byStatus('submitted');
   const underReview = byStatus('under_review');
   const completed = byStatus('completed');
+  const completedActive = completed.filter((c) => !c.concluded_by);
+  const archived = completed.filter((c) => c.concluded_by);
 
   const startCall = (e, c, mode) => {
     e.preventDefault();
@@ -114,14 +115,14 @@ export default function NurseDashboard() {
       <div className={styles.head}>
         <h1>Triage queue</h1>
         <div className={styles.headActions}>
-          <button type="button" className={styles.resetOrder} onClick={resetOrder} title="Reset to default order (by acuity)">
-            Reset order
+          <button type="button" className={styles.resetOrder} onClick={resetOrder} title="Reset to ML priority order">
+            Sort by ML priority
           </button>
           <Link to="/nurse/audit" className={styles.auditLink}>Audit log</Link>
         </div>
       </div>
       <p className={styles.intro}>
-        Review, edit, and reorder cases by clinical discretion. Use phone or video call to assess patients, then ↑ ↓ to change priority. Click a case to view and edit.
+        Queue is ordered by <strong>ML priority</strong>. Supervise and override when needed. Use phone or video call to assess, then ↑ ↓ to reorder. Click a case to view or override the ML decision.
       </p>
       {queue.length === 0 ? (
         <p className={styles.empty}>No triage cases in the queue.</p>
@@ -144,6 +145,7 @@ export default function NurseDashboard() {
                     </div>
                     <Link to={`/nurse/case/${c.id}`} className={styles.cardLink}>
                       <span className={styles.level}>Level {c.automated_triage_level}</span>
+                      <span className={styles.mlBadge}>ML: {c.ml_level ?? c.automated_triage_level} ({Math.round((c.ml_confidence ?? 0) * 100)}%)</span>
                       <span className={styles.complaint}>{c.chief_complaint || 'No chief complaint'}</span>
                       <span className={styles.meta}>{c.patient_name || c.patient_email} · {formatDate(c.submitted_at)}</span>
                     </Link>
@@ -169,6 +171,7 @@ export default function NurseDashboard() {
                     </div>
                     <Link to={`/nurse/case/${c.id}`} className={styles.cardLink}>
                       <span className={styles.level}>Level {c.final_triage_level ?? c.automated_triage_level}</span>
+                      <span className={styles.mlBadge}>ML: {c.ml_level ?? c.automated_triage_level} ({Math.round((c.ml_confidence ?? 0) * 100)}%)</span>
                       <span className={styles.complaint}>{c.chief_complaint || 'No chief complaint'}</span>
                       <span className={styles.meta}>{c.patient_name || c.patient_email} · {formatDate(c.submitted_at)}</span>
                     </Link>
@@ -178,20 +181,41 @@ export default function NurseDashboard() {
             </ul>
           </section>
           <section className={styles.queueSection}>
-            <h2>Completed ({completed.length})</h2>
+            <h2>Completed ({completedActive.length})</h2>
             <ul className={styles.list}>
-              {completed.slice(0, 25).map((c) => (
+              {completedActive.slice(0, 25).map((c) => (
                 <li key={c.id} className={styles.card}>
                   <Link to={`/nurse/case/${c.id}`} className={styles.cardLink}>
                     <span className={styles.level}>Level {c.final_triage_level ?? c.automated_triage_level}</span>
+                    {c.ml_level != null && <span className={styles.mlBadge}>ML was {c.ml_level}</span>}
                     <span className={styles.complaint}>{c.chief_complaint || 'No chief complaint'}</span>
                     <span className={styles.meta}>{c.patient_name || c.patient_email} · {formatDate(c.completed_at)}</span>
                   </Link>
                 </li>
               ))}
             </ul>
-            {completed.length > 25 && <p className={styles.more}>… and {completed.length - 25} more</p>}
+            {completedActive.length > 25 && <p className={styles.more}>… and {completedActive.length - 25} more</p>}
           </section>
+          {archived.length > 0 && (
+            <section className={styles.queueSection}>
+              <h2>Archived (doctor concluded) ({archived.length})</h2>
+              <ul className={styles.list}>
+                {archived.slice(0, 25).map((c) => (
+                  <li key={c.id} className={styles.card}>
+                    <Link to={`/nurse/case/${c.id}`} className={styles.cardLink}>
+                      <span className={styles.level}>Level {c.final_triage_level ?? c.automated_triage_level}</span>
+                      <span className={styles.complaint}>{c.chief_complaint || 'No chief complaint'}</span>
+                      <span className={styles.meta}>
+                        {c.patient_name || c.patient_email} · Concluded {formatDate(c.concluded_at)}
+                        {c.concluded_by_name ? ` by ${c.concluded_by_name}` : ''}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {archived.length > 25 && <p className={styles.more}>… and {archived.length - 25} more</p>}
+            </section>
+          )}
         </>
       )}
     </div>
