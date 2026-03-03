@@ -93,6 +93,8 @@ export default function NurseDashboard() {
   const submitted = byStatus('submitted');
   const underReview = byStatus('under_review');
   const completed = byStatus('completed');
+  const completedActive = completed.filter((c) => !c.concluded_by);
+  const archived = completed.filter((c) => c.concluded_by);
 
   const startCall = (e, c, mode) => {
     e.preventDefault();
@@ -179,9 +181,9 @@ export default function NurseDashboard() {
             </ul>
           </section>
           <section className={styles.queueSection}>
-            <h2>Completed ({completed.length})</h2>
+            <h2>Completed ({completedActive.length})</h2>
             <ul className={styles.list}>
-              {completed.slice(0, 25).map((c) => (
+              {completedActive.slice(0, 25).map((c) => (
                 <li key={c.id} className={styles.card}>
                   <Link to={`/nurse/case/${c.id}`} className={styles.cardLink}>
                     <span className={styles.level}>Level {c.final_triage_level ?? c.automated_triage_level}</span>
@@ -192,8 +194,28 @@ export default function NurseDashboard() {
                 </li>
               ))}
             </ul>
-            {completed.length > 25 && <p className={styles.more}>… and {completed.length - 25} more</p>}
+            {completedActive.length > 25 && <p className={styles.more}>… and {completedActive.length - 25} more</p>}
           </section>
+          {archived.length > 0 && (
+            <section className={styles.queueSection}>
+              <h2>Archived (doctor concluded) ({archived.length})</h2>
+              <ul className={styles.list}>
+                {archived.slice(0, 25).map((c) => (
+                  <li key={c.id} className={styles.card}>
+                    <Link to={`/nurse/case/${c.id}`} className={styles.cardLink}>
+                      <span className={styles.level}>Level {c.final_triage_level ?? c.automated_triage_level}</span>
+                      <span className={styles.complaint}>{c.chief_complaint || 'No chief complaint'}</span>
+                      <span className={styles.meta}>
+                        {c.patient_name || c.patient_email} · Concluded {formatDate(c.concluded_at)}
+                        {c.concluded_by_name ? ` by ${c.concluded_by_name}` : ''}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {archived.length > 25 && <p className={styles.more}>… and {archived.length - 25} more</p>}
+            </section>
+          )}
         </>
       )}
     </div>
