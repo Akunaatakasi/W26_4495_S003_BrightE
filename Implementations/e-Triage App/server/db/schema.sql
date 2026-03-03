@@ -1,6 +1,3 @@
--- Bright Remote Triage - Database Schema
--- Run this in PostgreSQL to create tables (or use init.js)
-
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
