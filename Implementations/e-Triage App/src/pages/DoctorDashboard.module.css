@@ -36,6 +36,42 @@
   letter-spacing: 0.02em;
 }
 
+.hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.historyCard {
+  padding: 0.6rem 0.9rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.historyName {
+  font-weight: 600;
+  color: var(--text);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.historyMeta {
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+}
+
 .list {
   list-style: none;
   margin: 0;

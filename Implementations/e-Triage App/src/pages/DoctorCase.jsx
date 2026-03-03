@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { parseJson } from '../utils/api';
 import styles from './DoctorCase.module.css';
@@ -11,8 +11,10 @@ function formatDate(iso) {
 
 export default function DoctorCase() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { authFetch } = useAuth();
   const [case_, setCase_] = useState(null);
+  const [concluding, setConcluding] = useState(false);
 
   useEffect(() => {
     authFetch(`/patients/${id}`)
@@ -23,6 +25,25 @@ export default function DoctorCase() {
       })
       .catch(() => setCase_(null));
   }, [id, authFetch]);
+
+  const handleDone = async () => {
+    setConcluding(true);
+    try {
+      const res = await authFetch(`/patients/${id}/conclude`, { method: 'PATCH' });
+      const data = await parseJson(res);
+      if (res.ok && data?.ok) {
+        navigate('/doctor');
+        return;
+      }
+      let msg = data?.error || 'Failed to conclude';
+      if (data?.method && data?.path) msg = `${msg}\n${data.method} ${data.path}`;
+      alert(msg);
+    } catch {
+      alert('Failed to conclude');
+    } finally {
+      setConcluding(false);
+    }
+  };
 
   if (!case_) return <div className={styles.loading}>Loading case…</div>;
 
@@ -65,7 +86,10 @@ export default function DoctorCase() {
         <p><strong>Submitted:</strong> {formatDate(case_.submitted_at)} · <strong>Completed:</strong> {formatDate(case_.completed_at)}</p>
       </section>
       <div className={styles.actions}>
-        <Link to="/doctor" className={styles.backBtn}>Back to completed list</Link>
+        <button type="button" className={styles.doneBtn} onClick={handleDone} disabled={concluding}>
+          {concluding ? '…' : 'Done'}
+        </button>
+        <Link to="/doctor" className={styles.backBtn}>Back to list</Link>
       </div>
     </div>
   );

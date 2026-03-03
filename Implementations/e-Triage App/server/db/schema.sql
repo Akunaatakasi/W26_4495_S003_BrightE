@@ -27,6 +27,9 @@ CREATE TABLE IF NOT EXISTS triage_cases (
   override_reason TEXT,
   -- Status: submitted, under_review, completed
   status VARCHAR(30) DEFAULT 'submitted' CHECK (status IN ('submitted', 'under_review', 'completed')),
+  -- Doctor concludes viewing: removed from completed list, kept in doctor history
+  concluded_by INTEGER REFERENCES users(id),
+  concluded_at TIMESTAMPTZ,
   -- Timestamps for metrics
   submitted_at TIMESTAMPTZ DEFAULT NOW(),
   first_reviewed_at TIMESTAMPTZ,

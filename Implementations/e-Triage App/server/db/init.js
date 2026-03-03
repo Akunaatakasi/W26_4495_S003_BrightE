@@ -11,6 +11,12 @@ async function init() {
   try {
     await pool.query(schema);
     console.log('Database schema initialized.');
+    // Migration: add doctor conclude columns if missing (existing DBs)
+    await pool.query(`
+      ALTER TABLE triage_cases ADD COLUMN IF NOT EXISTS concluded_by INTEGER REFERENCES users(id);
+      ALTER TABLE triage_cases ADD COLUMN IF NOT EXISTS concluded_at TIMESTAMPTZ;
+    `);
+    console.log('Migrations applied.');
   } catch (err) {
     console.error('Init failed:', err.message);
     process.exit(1);

@@ -38,8 +38,29 @@ router.get('/completed', requireAuth, requireRole('doctor'), async (req, res) =>
               u.full_name AS patient_name, u.email AS patient_email
        FROM triage_cases t
        JOIN users u ON u.id = t.patient_id
-       WHERE t.status = 'completed'
+       WHERE t.status = 'completed' AND t.concluded_by IS NULL
        ORDER BY t.final_triage_level ASC NULLS LAST, t.completed_at DESC`
+    );
+    res.json(rows.map((r) => ({ ...r, triage_label: TRIAGE_LABELS[r.final_triage_level ?? r.automated_triage_level] })));
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production' && isDbConnectionError(e)) {
+      return res.json([]);
+    }
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.get('/doctor-history', requireAuth, requireRole('doctor'), async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT t.id, t.patient_id, t.chief_complaint, t.automated_triage_level, t.final_triage_level,
+              t.completed_at, t.concluded_at,
+              u.full_name AS patient_name, u.email AS patient_email
+       FROM triage_cases t
+       JOIN users u ON u.id = t.patient_id
+       WHERE t.concluded_by = $1
+       ORDER BY t.concluded_at DESC`,
+      [req.userId]
     );
     res.json(rows.map((r) => ({ ...r, triage_label: TRIAGE_LABELS[r.final_triage_level ?? r.automated_triage_level] })));
   } catch (e) {
@@ -141,4 +162,24 @@ router.patch('/:id/complete', requireAuth, requireRole('nurse'), async (req, res
   }
 });
 
-export { router as patientsRouter };
+async function concludeCase(req, res) {
+  try {
+    const { id } = req.params;
+    const { rows } = await pool.query(
+      `UPDATE triage_cases SET concluded_by = $1, concluded_at = NOW()
+       WHERE id = $2 AND status = 'completed' AND concluded_by IS NULL
+       RETURNING id`,
+      [req.userId, id]
+    );
+    const updated = rows[0];
+    if (!updated) return res.status(404).json({ error: 'Case not found or already concluded' });
+    await logAudit({ userId: req.userId, action: 'doctor_conclude', resourceType: 'triage_case', resourceId: parseInt(id, 10) });
+    res.json({ ok: true, id: updated.id });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
+
+router.patch('/:id/conclude', requireAuth, requireRole('doctor'), concludeCase);
+
+export { router as patientsRouter, concludeCase };

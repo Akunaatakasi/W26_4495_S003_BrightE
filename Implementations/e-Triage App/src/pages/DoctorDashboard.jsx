@@ -11,17 +11,23 @@ function formatDate(iso) {
 
 export default function DoctorDashboard() {
   const [completed, setCompleted] = useState([]);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const { authFetch } = useAuth();
 
   const load = () => {
-    authFetch('/patients/completed')
-      .then((r) => parseJson(r))
-      .then((data) => {
-        const list = Array.isArray(data) ? data : [];
-        setCompleted(list);
+    Promise.all([
+      authFetch('/patients/completed').then((r) => parseJson(r)).then((data) => (Array.isArray(data) ? data : [])),
+      authFetch('/patients/doctor-history').then((r) => parseJson(r)).then((data) => (Array.isArray(data) ? data : [])),
+    ])
+      .then(([completedList, historyList]) => {
+        setCompleted(completedList);
+        setHistory(historyList);
       })
-      .catch(() => setCompleted([]))
+      .catch(() => {
+        setCompleted([]);
+        setHistory([]);
+      })
       .finally(() => setLoading(false));
   };
 
@@ -41,11 +47,13 @@ export default function DoctorDashboard() {
       <p className={styles.intro}>
         View completed triage cases only. Request one patient at a time to review their case.
       </p>
-      {completed.length === 0 ? (
-        <p className={styles.empty}>No completed triage cases.</p>
-      ) : (
+      {completed.length === 0 && history.length === 0 ? (
+        <p className={styles.empty}>No completed triage cases. Your concluded cases will appear in history below.</p>
+      ) : null}
+      {completed.length > 0 && (
         <section className={styles.section}>
           <h2>Completed triage ({completed.length})</h2>
+          <p className={styles.hint}>Request one patient at a time. When done, click &quot;Done&quot; to return here; that case will move to your history.</p>
           <ul className={styles.list}>
             {completed.map((c) => (
               <li key={c.id} className={styles.card}>
@@ -57,6 +65,20 @@ export default function DoctorDashboard() {
                 <Link to={`/doctor/case/${c.id}`} className={styles.requestBtn}>
                   Request patient
                 </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {history.length > 0 && (
+        <section className={styles.section}>
+          <h2>Your history ({history.length})</h2>
+          <p className={styles.hint}>Cases you have concluded — no longer in the list above.</p>
+          <ul className={styles.historyList}>
+            {history.map((c) => (
+              <li key={c.id} className={styles.historyCard}>
+                <span className={styles.historyName}>{c.patient_name || c.patient_email}</span>
+                <span className={styles.historyMeta}>{c.chief_complaint || '—'} · Concluded {formatDate(c.concluded_at)}</span>
               </li>
             ))}
           </ul>
