@@ -1,0 +1,27 @@
+{
+  "dataset_path": "analytics/data/ed2022-stata.dta",
+  "rows_used": 10207,
+  "train_rows": 8165,
+  "test_rows": 2042,
+  "accuracy": 0.5239960822722821,
+  "features": [
+    "chief_complaint_encoded",
+    "self_reported_urgency",
+    "symptom_count",
+    "AGE",
+    "SEX",
+    "TEMPF",
+    "PULSE",
+    "BPSYS",
+    "BPDIAS",
+    "POPCT",
+    "RESPR"
+  ],
+  "output_files": {
+    "model": "analytics/ml\\triage_model.pkl",
+    "label_encoder": "analytics/ml\\label_encoder.pkl",
+    "classification_report": "analytics/ml\\outputs\\classification_report.txt",
+    "confusion_matrix": "analytics/ml\\outputs\\confusion_matrix.png",
+    "feature_importance": "analytics/ml\\outputs\\feature_importance.csv"
+  }
+}
