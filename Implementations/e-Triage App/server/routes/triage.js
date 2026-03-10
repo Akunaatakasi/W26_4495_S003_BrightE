@@ -10,6 +10,35 @@ import jwt from 'jsonwebtoken';
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'bright-triage-dev-secret-change-in-production';
 
+async function getMlTriageLevel({ chief_complaint, symptoms, self_reported_urgency }) {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chief_complaint,
+        symptoms,
+        self_reported_urgency,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('ML API request failed');
+    }
+
+    const data = await response.json();
+    return data.predicted_triage_level;
+  } catch (error) {
+    console.error('[ML fallback]', error.message);
+
+    return computeAutomatedTriageLevel({
+      self_reported_urgency,
+      symptoms,
+      chief_complaint,
+    });
+  }
+}
+
 router.post('/submit-guest', async (req, res) => {
   try {
     const { guest_token, demographics, chief_complaint, symptoms, self_reported_urgency } = req.body;
@@ -38,11 +67,13 @@ router.post('/submit-guest', async (req, res) => {
       );
       patientId = insert.rows[0].id;
     }
-    const automatedLevel = computeAutomatedTriageLevel({
+
+    const automatedLevel = await getMlTriageLevel({
       self_reported_urgency: self_reported_urgency ?? 5,
       symptoms: Array.isArray(symptoms) ? symptoms : [],
       chief_complaint: chief_complaint || '',
     });
+
     const { rows } = await pool.query(
       `INSERT INTO triage_cases (patient_id, demographics, chief_complaint, symptoms, self_reported_urgency, automated_triage_level, status)
        VALUES ($1, $2, $3, $4, $5, $6, 'submitted')
@@ -73,11 +104,13 @@ router.post('/submit', requireAuth, requireRole('patient'), async (req, res) => 
   try {
     const { demographics, chief_complaint, symptoms, self_reported_urgency } = req.body;
     const patientId = req.userId;
-    const automatedLevel = computeAutomatedTriageLevel({
+
+    const automatedLevel = await getMlTriageLevel({
       self_reported_urgency: self_reported_urgency ?? 5,
       symptoms: Array.isArray(symptoms) ? symptoms : [],
       chief_complaint: chief_complaint || '',
     });
+
     const { rows } = await pool.query(
       `INSERT INTO triage_cases (patient_id, demographics, chief_complaint, symptoms, self_reported_urgency, automated_triage_level, status)
        VALUES ($1, $2, $3, $4, $5, $6, 'submitted')
@@ -105,5 +138,21 @@ router.post('/submit', requireAuth, requireRole('patient'), async (req, res) => 
 });
 
 router.get('/levels', (_, res) => res.json(TRIAGE_LABELS));
+
+router.get('/debug', async (_, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT id, chief_complaint, symptoms, self_reported_urgency,
+             automated_triage_level, final_triage_level, status, submitted_at
+      FROM triage_cases
+      ORDER BY submitted_at DESC
+      LIMIT 10
+    `);
+    res.json(rows);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'failed to fetch rows' });
+  }
+});
 
 export { router as triageRouter };
