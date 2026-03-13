@@ -19,18 +19,26 @@ export default function Layout() {
           {!user && (
             <>
               <Link to="/triage/new">Start triage</Link>
+              <Link to="/queue">Queue</Link>
               <Link to="/staff">Staff</Link>
             </>
           )}
+
           {user?.role === 'nurse' && (
             <>
               <Link to="/nurse">Queue</Link>
+              <Link to="/queue">Public Queue View</Link>
               <Link to="/nurse/audit">Audit log</Link>
             </>
           )}
+
           {user?.role === 'doctor' && (
-            <Link to="/doctor">Completed</Link>
+            <>
+              <Link to="/queue">Queue</Link>
+              <Link to="/doctor">Completed</Link>
+            </>
           )}
+
           {user && (
             <button type="button" className={styles.logout} onClick={handleLogout}>
               Log out
@@ -38,9 +46,11 @@ export default function Layout() {
           )}
         </nav>
       </header>
+
       <main className={styles.main}>
         <Outlet />
       </main>
+
       <footer className={styles.footer}>
         <span>Remote ED Triage & Telemedicine — CSIS 4495 · Bright Ekeator & AJ Encina</span>
       </footer>
