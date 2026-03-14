@@ -1,5 +1,6 @@
 .wrap {
-  max-width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
   padding: 0.5rem 0;
 }
 
@@ -19,7 +20,9 @@
 }
 
 .form section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .form h2 {
@@ -60,6 +63,7 @@
   color: var(--text);
   font-size: 1rem;
 }
+
 .form input:focus,
 .form select:focus,
 .form textarea:focus {
@@ -70,43 +74,110 @@
 
 .form textarea {
   resize: vertical;
-  min-height: 76px;
+  min-height: 90px;
+  line-height: 1.5;
 }
 
 .urgency {
   display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .urgencyOption {
-  flex-direction: row;
+  display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 600;
+  transition: all 0.15s ease;
 }
 
 .urgencyOption input {
-  margin-right: 0.45rem;
+  display: none;
+}
+
+.urgencyOption span {
+  font-size: 0.95rem;
+}
+
+.urgencyOption:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.urgencyOption:has(input:checked) {
+  background: rgba(34, 211, 238, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.15);
+}
+
+.urgencyNote {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
 }
 
 .symptoms {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.45rem;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 0.75rem 1rem;
+  width: 100%;
+  margin-top: 0.5rem;
 }
 
 .checkbox {
+  display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 0.7rem;
   cursor: pointer;
+  padding: 0.8rem 0.95rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  min-height: 52px;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.checkbox:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
 }
 
 .checkbox input {
-  margin-right: 0.5rem;
+  margin: 0;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.checkbox span {
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.checkbox:has(input:checked) {
+  background: rgba(34, 211, 238, 0.12);
+  border-color: rgba(34, 211, 238, 0.5);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.15);
+}
+
+@media (max-width: 900px) {
+  .symptoms {
+    grid-template-columns: 1fr;
+  }
 }
 
 .form > button {
-  padding: 0.75rem 1.25rem;
+  padding: 0.85rem 1.35rem;
   background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 100%);
   border: none;
   border-radius: var(--radius-sm);
@@ -116,10 +187,12 @@
   box-shadow: 0 4px 14px rgba(34, 211, 238, 0.3);
   margin-top: 0.25rem;
 }
+
 .form > button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(34, 211, 238, 0.35);
 }
+
 .form > button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
@@ -132,6 +205,8 @@
   border-radius: var(--radius-lg);
   padding: 1.35rem 1.25rem;
   margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .result .level {
@@ -159,13 +234,48 @@
   font-weight: 600;
   font-size: 0.9rem;
 }
+
 .result button.secondary {
   background: transparent;
   border: 1px solid var(--border-strong);
   color: var(--text);
 }
+
 .result button.secondary:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+.triageBar1::before,
+.triageBar2::before,
+.triageBar3::before,
+.triageBar4::before,
+.triageBar5::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+}
+
+.triageBar1::before {
+  background: #ff3b30;
+}
+
+.triageBar2::before {
+  background: #ff9500;
+}
+
+.triageBar3::before {
+  background: #ffd60a;
+}
+
+.triageBar4::before {
+  background: #30d158;
+}
+
+.triageBar5::before {
+  background: #0a84ff;
 }
 
 .error {
@@ -178,6 +288,7 @@
   font-size: 0.875rem;
   font-weight: 500;
 }
+
 .errorHint {
   margin: 0.5rem 0 0;
   font-size: 0.8rem;
@@ -193,6 +304,7 @@
   margin-bottom: 1.25rem;
   text-align: center;
 }
+
 .otpCodeLabel {
   display: block;
   font-size: 0.85rem;
@@ -202,6 +314,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
 .otpCodeValue {
   display: block;
   font-size: 2rem;
@@ -211,6 +324,7 @@
   margin: 0.5rem 0;
   font-variant-numeric: tabular-nums;
 }
+
 .otpCodeBox .codeHint {
   display: block;
   margin-top: 0.5rem;
@@ -228,11 +342,13 @@
   font-size: 0.9rem;
   color: var(--text);
 }
+
 .demoOtp code {
   font-size: 1.1rem;
   letter-spacing: 0.1em;
   font-weight: 600;
 }
+
 .demoOtp .codeHint {
   display: block;
   margin-top: 0.35rem;
@@ -247,12 +363,14 @@
   flex-wrap: wrap;
   margin-top: 0.5rem;
 }
+
 .otpActions button.secondary {
   background: transparent;
   border: 1px solid var(--border-strong);
   color: var(--text);
   font-weight: 500;
 }
+
 .otpActions button.secondary:hover {
   background: rgba(255, 255, 255, 0.05);
 }
@@ -262,6 +380,7 @@
   color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
+
 .linkBtn {
   margin-left: 0.5rem;
   padding: 0.2rem 0.5rem;
@@ -272,6 +391,58 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
 .linkBtn:hover {
   color: var(--text);
+}
+
+.level1 {
+  background: #ff3b30;
+}
+
+.level2 {
+  background: #ff9500;
+}
+
+.level3 {
+  background: #ffd60a;
+  color: #000;
+}
+
+.level4 {
+  background: #30d158;
+}
+
+.level5 {
+  background: #0a84ff;
+}
+
+.triageResult {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.triageBadge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+}
+
+.triageText {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.queueInfo {
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }

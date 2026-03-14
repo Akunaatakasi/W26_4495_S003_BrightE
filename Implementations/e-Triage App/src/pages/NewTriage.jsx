@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { parseJson, sendOtp, verifyOtp, getPatientVerified, setPatientVerified, getGuestToken, clearGuestToken, DEMO_ONLY, DEMO_GUEST_TOKEN } from '../utils/api';
+import {
+  parseJson,
+  sendOtp,
+  verifyOtp,
+  getPatientVerified,
+  setPatientVerified,
+  clearPatientVerified,
+  getGuestToken,
+  clearGuestToken,
+  DEMO_ONLY,
+  DEMO_GUEST_TOKEN
+} from '../utils/api';
 import styles from './NewTriage.module.css';
 
 const SYMPTOM_OPTIONS = [
@@ -33,6 +44,7 @@ export default function NewTriage() {
   const [urgency, setUrgency] = useState(5);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
+  const [queueCount, setQueueCount] = useState(null);
   const { user, authFetch } = useAuth();
 
   const [otpEmail, setOtpEmail] = useState('');
@@ -44,6 +56,23 @@ export default function NewTriage() {
   useEffect(() => {
     setVerifiedEmail(getPatientVerified());
   }, []);
+  useEffect(() => {
+  const loadQueue = () => {
+    fetch('/api/triage/queue-stats')
+      .then((r) => r.json())
+      .then((data) => {
+        setQueueCount(data.waiting ?? 0);
+      })
+      .catch(() => {});
+  };
+
+  loadQueue();
+  const interval = setInterval(loadQueue, 5000);
+
+  return () => clearInterval(interval);
+}, []);
+
+  const navigate = useNavigate();
 
   const isStaff = user?.role === 'nurse' || user?.role === 'doctor';
   const needsOtp = !isStaff && !verifiedEmail;
@@ -51,11 +80,13 @@ export default function NewTriage() {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setOtpError('');
+
     const email = otpEmail.trim();
     if (!email) {
       setOtpError('Please enter your email.');
       return;
     }
+
     setSubmitting(true);
     try {
       await sendOtp(email);
@@ -71,10 +102,12 @@ export default function NewTriage() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setOtpError('');
+
     if (!otpCode.trim()) {
       setOtpError('Please enter the code.');
       return;
     }
+
     setSubmitting(true);
     try {
       await verifyOtp(otpEmail.trim(), otpCode.trim());
@@ -90,54 +123,68 @@ export default function NewTriage() {
     }
   };
 
-  const navigate = useNavigate();
-
   const toggleSymptom = (id) => {
-    setSymptoms((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
+    setSymptoms((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+
     const payload = {
-      demographics: { age: demographics.age || undefined, gender: demographics.gender || undefined },
+      demographics: {
+        age: demographics.age || undefined,
+        gender: demographics.gender || undefined,
+      },
       chief_complaint: chiefComplaint || undefined,
       symptoms,
       self_reported_urgency: urgency,
     };
+
     try {
       if (user?.role === 'nurse') {
         setResult({ error: 'Staff must use the queue to review cases, not submit triage.' });
         setSubmitting(false);
         return;
       }
+
       if (!user) {
         const guest_token = getGuestToken();
+
         if (!guest_token) {
           setResult({ error: 'Please verify your email with the OTP first.' });
           setSubmitting(false);
           return;
         }
-        // Stale demo token from before backend was enabled is not a valid JWT
+
         if (guest_token === DEMO_GUEST_TOKEN) {
           clearGuestToken();
           setResult({ error: 'Session expired. Please verify your email again with the OTP, then submit.' });
           setSubmitting(false);
           return;
         }
+
         if (DEMO_ONLY) {
-          setResult({ id: 'demo', triage_label: 'Demo – not saved', note: 'Demo mode: triage was not sent to a server.' });
-          clearGuestToken();
+          setResult({
+            id: 'demo',
+            triage_label: 'Demo – not saved',
+            note: 'Demo mode: triage was not sent to a server.'
+          });
           setSubmitting(false);
           return;
         }
+
         const res = await fetch('/api/triage/submit-guest', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ guest_token, ...payload }),
         });
+
         const data = await parseJson(res);
         const serverError = data && (data.error || data.message);
+
         if (!res.ok) {
           if (res.status === 400 && serverError && /invalid|expired|verify/i.test(serverError)) {
             clearGuestToken();
@@ -145,20 +192,27 @@ export default function NewTriage() {
           }
           throw new Error(serverError || `Submit failed (${res.status}). Check that the backend is running.`);
         }
-        if (!data.id) throw new Error('Server returned invalid response.');
+
+        if (!data.id) {
+          throw new Error('Server returned invalid response.');
+        }
+
         setResult({ ...data, triage_label: data.triage_label });
-        clearGuestToken();
         setSubmitting(false);
         return;
       }
+
       const res = await authFetch('/triage/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+
       const data = await parseJson(res);
+
       if (!res.ok) throw new Error(data.error || 'Submit failed');
       if (!data.id) throw new Error('Server returned invalid response. Is the backend running?');
+
       setResult(data);
     } catch (err) {
       setResult({ error: err.message });
@@ -171,11 +225,43 @@ export default function NewTriage() {
     return (
       <div className={styles.wrap}>
         <h1>Preliminary triage result</h1>
-        <div className={styles.result}>
-          <p className={styles.level}>Automated triage: <strong>{result.triage_label}</strong></p>
-          <p className={styles.note}>A nurse may review your case and adjust this level. Proceed to the emergency department when ready.</p>
-          <button type="button" onClick={() => navigate('/')}>Back to home</button>
-          <button type="button" className={styles.secondary} onClick={() => { setResult(null); setChiefComplaint(''); setSymptoms([]); setUrgency(5); }}>Submit another</button>
+        <div className={`${styles.result} ${styles['triageBar' + result.automated_triage_level]}`}>
+          <div className={styles.triageResult}>
+  <span className={`${styles.triageBadge} ${styles['level' + result.automated_triage_level]}`}>
+    Level {result.automated_triage_level}
+  </span>
+
+  <span className={styles.triageText}>
+    {result.triage_label}
+  </span>
+</div>
+
+          {result.predicted_wait_time_minutes != null && (
+            <p className={styles.note}>
+              Estimated wait time: <strong>{Math.round(result.predicted_wait_time_minutes)} minutes</strong>
+            </p>
+          )}
+
+          <p className={styles.note}>
+            A nurse may review your case and adjust this level. Proceed to the emergency department when ready.
+          </p>
+
+          <button type="button" onClick={() => navigate('/')}>
+            Back to home
+          </button>
+
+          <button
+            type="button"
+            className={styles.secondary}
+            onClick={() => {
+              setResult(null);
+              setChiefComplaint('');
+              setSymptoms([]);
+              setUrgency(5);
+            }}
+          >
+            Submit another
+          </button>
         </div>
       </div>
     );
@@ -185,8 +271,12 @@ export default function NewTriage() {
     return (
       <div className={styles.wrap}>
         <h1>Verify with email</h1>
-        <p className={styles.intro}>Enter your email to receive a one-time code. No account or password needed.</p>
+        <p className={styles.intro}>
+          Enter your email to receive a one-time code. No account or password needed.
+        </p>
+
         {otpError && <div className={styles.error}>{otpError}</div>}
+
         {!otpSent ? (
           <form onSubmit={handleSendOtp} className={styles.form}>
             <section>
@@ -201,7 +291,10 @@ export default function NewTriage() {
                 />
               </label>
             </section>
-            <button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send OTP'}</button>
+
+            <button type="submit" disabled={submitting}>
+              {submitting ? 'Sending…' : 'Send OTP'}
+            </button>
           </form>
         ) : (
           <form onSubmit={handleVerifyOtp} className={styles.form}>
@@ -219,9 +312,24 @@ export default function NewTriage() {
                 />
               </label>
             </section>
+
             <div className={styles.otpActions}>
-              <button type="submit" disabled={submitting}>{submitting ? 'Verifying…' : 'Verify'}</button>
-              <button type="button" className={styles.secondary} onClick={() => { setOtpSent(false); setOtpError(''); }}>Use different email</button>
+              <button type="submit" disabled={submitting}>
+                {submitting ? 'Verifying…' : 'Verify'}
+              </button>
+
+              <button
+                type="button"
+                className={styles.secondary}
+                onClick={() => {
+                  setOtpSent(false);
+                  setOtpError('');
+                  setOtpCode('');
+                  setOtpEmail('');
+                }}
+              >
+                Use different email
+              </button>
             </div>
           </form>
         )}
@@ -232,30 +340,62 @@ export default function NewTriage() {
   return (
     <div className={styles.wrap}>
       <h1>Remote triage</h1>
+
       {verifiedEmail && (
         <p className={styles.verifiedAs}>
-          Verified as <strong>{verifiedEmail}</strong>
-          <button type="button" className={styles.linkBtn} onClick={() => { clearPatientVerified(); clearGuestToken(); setVerifiedEmail(null); }}>Use different email</button>
+          Verified as <strong>{verifiedEmail}</strong>{' '}
+          <button
+            type="button"
+            className={styles.linkBtn}
+            onClick={() => {
+              clearPatientVerified();
+              clearGuestToken();
+              setVerifiedEmail(null);
+              setOtpEmail('');
+              setOtpCode('');
+              setOtpSent(false);
+              setOtpError('');
+              setResult(null);
+            }}
+          >
+            Use different email
+          </button>
         </p>
       )}
-      <p className={styles.intro}>Submit your symptoms and urgency. You will receive a preliminary triage level before arriving at the ED.</p>
+
+      <p className={styles.intro}>
+        Submit your symptoms and urgency. You will receive a preliminary triage level before arriving at the ED.
+      </p>
+
       {result?.error && (
         <div className={styles.error}>
           {result.error}
           <p className={styles.errorHint}>Check the server terminal for details.</p>
         </div>
       )}
+
       <form onSubmit={handleSubmit} className={styles.form}>
         <section>
           <h2>Demographics (optional)</h2>
           <div className={styles.row}>
             <label>
               Age
-              <input type="number" min="0" max="120" value={demographics.age} onChange={(e) => setDemographics((d) => ({ ...d, age: e.target.value }))} placeholder="e.g. 45" />
+              <input
+                type="number"
+                min="0"
+                max="120"
+                value={demographics.age}
+                onChange={(e) => setDemographics((d) => ({ ...d, age: e.target.value }))}
+                placeholder="e.g. 45"
+              />
             </label>
+
             <label>
               Gender
-              <select value={demographics.gender} onChange={(e) => setDemographics((d) => ({ ...d, gender: e.target.value }))}>
+              <select
+                value={demographics.gender}
+                onChange={(e) => setDemographics((d) => ({ ...d, gender: e.target.value }))}
+              >
                 <option value="">—</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -264,33 +404,57 @@ export default function NewTriage() {
             </label>
           </div>
         </section>
+
         <section>
           <h2>Chief complaint</h2>
-          <textarea value={chiefComplaint} onChange={(e) => setChiefComplaint(e.target.value)} placeholder="Brief description of why you are seeking emergency care…" rows={3} />
+          <textarea
+            value={chiefComplaint}
+            onChange={(e) => setChiefComplaint(e.target.value)}
+            placeholder="Brief description of why you are seeking emergency care…"
+            rows={3}
+          />
         </section>
+
         <section>
-          <h2>Self-reported urgency (1 = most urgent, 5 = least urgent)</h2>
+          <h2>Self-reported urgency</h2>
+<p className={styles.urgencyNote}>
+  1 = most urgent • 5 = least urgent
+</p>
           <div className={styles.urgency}>
             {[1, 2, 3, 4, 5].map((n) => (
               <label key={n} className={styles.urgencyOption}>
-                <input type="radio" name="urgency" value={n} checked={urgency === n} onChange={() => setUrgency(n)} />
+                <input
+                  type="radio"
+                  name="urgency"
+                  value={n}
+                  checked={urgency === n}
+                  onChange={() => setUrgency(n)}
+                />
                 <span>{n}</span>
               </label>
             ))}
           </div>
         </section>
+
         <section>
           <h2>Select any that apply</h2>
           <div className={styles.symptoms}>
             {SYMPTOM_OPTIONS.map(({ id, label }) => (
               <label key={id} className={styles.checkbox}>
-                <input type="checkbox" checked={symptoms.includes(id)} onChange={() => toggleSymptom(id)} />
+                <input
+                  type="checkbox"
+                  checked={symptoms.includes(id)}
+                  onChange={() => toggleSymptom(id)}
+                />
                 <span>{label}</span>
               </label>
             ))}
           </div>
         </section>
-        <button type="submit" disabled={submitting}>{submitting ? 'Submitting…' : 'Submit triage'}</button>
+
+        <button type="submit" disabled={submitting}>
+          {submitting ? 'Submitting…' : 'Submit triage'}
+        </button>
       </form>
     </div>
   );
