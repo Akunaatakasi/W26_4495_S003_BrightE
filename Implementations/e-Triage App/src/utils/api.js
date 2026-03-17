@@ -21,7 +21,7 @@ export async function parseJson(res) {
 
 /** Request OTP. In DEMO_ONLY: no API call; any code will work at verify. */
 export async function sendOtp(email) {
-  if (DEMO_ONLY) return { success: true };
+  if (DEMO_ONLY) return { success: true, code: '05080307' };
   try {
     const res = await fetch(`${API}/otp/send`, {
       method: 'POST',
@@ -30,7 +30,7 @@ export async function sendOtp(email) {
     });
     const data = await parseJson(res);
     if (!res.ok) throw new Error(data.error || 'Failed to send OTP');
-    return { success: true };
+    return { success: true, code: data.code };
   } catch (err) {
     throw new Error(err.message || 'Failed to send OTP');
   }

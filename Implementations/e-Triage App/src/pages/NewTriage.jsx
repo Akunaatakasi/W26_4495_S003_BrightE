@@ -49,6 +49,7 @@ export default function NewTriage() {
 
   const [otpEmail, setOtpEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
+  const [otpDisplayCode, setOtpDisplayCode] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otpError, setOtpError] = useState('');
   const [verifiedEmail, setVerifiedEmail] = useState(() => getPatientVerified());
@@ -89,8 +90,9 @@ export default function NewTriage() {
 
     setSubmitting(true);
     try {
-      await sendOtp(email);
+      const { code } = await sendOtp(email);
       setOtpSent(true);
+      setOtpDisplayCode(code || '');
       setOtpCode('');
     } catch (err) {
       setOtpError(err.message || 'Failed to send OTP');
@@ -301,13 +303,22 @@ export default function NewTriage() {
             <section>
               <label>
                 Enter the code for {otpEmail}
+                {otpDisplayCode && (
+                  <div className={styles.otpCodeBox}>
+                    <span className={styles.otpCodeLabel}>Your one-time code</span>
+                    <span className={styles.otpCodeValue}>{otpDisplayCode}</span>
+                    <span className={styles.codeHint}>
+                      Type this code into the box below to continue.
+                    </span>
+                  </div>
+                )}
                 <input
                   type="text"
                   inputMode="numeric"
                   maxLength={8}
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                  placeholder="e.g. 05080307"
+                  placeholder="Enter the 8-digit code you received"
                   autoComplete="one-time-code"
                 />
               </label>
@@ -323,6 +334,7 @@ export default function NewTriage() {
                 className={styles.secondary}
                 onClick={() => {
                   setOtpSent(false);
+                  setOtpDisplayCode('');
                   setOtpError('');
                   setOtpCode('');
                   setOtpEmail('');

@@ -5,7 +5,13 @@ const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'bright-triage-dev-secret-change-in-production';
 const OTPS = new Map(); // email (lowercase) -> { code, expiresAt }
 const TTL_MS = 10 * 60 * 1000; // 10 minutes
-const DEMO_OTP = '05080307';
+
+function generateOtp() {
+  // 8-digit numeric code to match existing UI example format (e.g. 05080307)
+  const min = 10_000_000;
+  const max = 99_999_999;
+  return String(Math.floor(Math.random() * (max - min + 1)) + min);
+}
 
 router.post('/send', (req, res) => {
   const email = req.body?.email?.trim();
@@ -17,8 +23,9 @@ router.post('/send', (req, res) => {
     return res.status(400).json({ error: 'Invalid email format' });
   }
   const key = email.toLowerCase();
-  OTPS.set(key, { code: DEMO_OTP, expiresAt: Date.now() + TTL_MS });
-  return res.json({ success: true });
+  const code = generateOtp();
+  OTPS.set(key, { code, expiresAt: Date.now() + TTL_MS });
+  return res.json({ success: true, code });
 });
 
 router.post('/verify', (req, res) => {
@@ -30,10 +37,8 @@ router.post('/verify', (req, res) => {
   }
   const key = email.toLowerCase();
   const entry = OTPS.get(key);
-  const normalized = code.length === 7 && code === '5080307' ? DEMO_OTP : code;
   const valid = entry && Date.now() <= entry.expiresAt && entry.code === code;
-  const demoValid = normalized === DEMO_OTP || code === DEMO_OTP;
-  if (!valid && !demoValid) {
+  if (!valid) {
     if (entry && Date.now() > entry.expiresAt) OTPS.delete(key);
     return res.status(400).json({ error: 'Invalid OTP.' });
   }
