@@ -1,3 +1,6 @@
+-- Bright Remote Triage - Database Schema
+-- Run this in PostgreSQL to create tables (or use init.js)
+
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
@@ -42,6 +45,15 @@ CREATE TABLE IF NOT EXISTS audit_log (
   details JSONB DEFAULT '{}',
   ip_address VARCHAR(45),
   created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Online calibration learned from nurse final triage outcomes.
+-- For each predicted level, stores aggregate correction toward nurse decisions.
+CREATE TABLE IF NOT EXISTS ml_level_calibration (
+  predicted_level INTEGER PRIMARY KEY CHECK (predicted_level BETWEEN 1 AND 5),
+  sample_count INTEGER NOT NULL DEFAULT 0,
+  total_delta NUMERIC NOT NULL DEFAULT 0,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_triage_patient ON triage_cases(patient_id);
