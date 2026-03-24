@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { parseJson } from '../utils/api';
 import { predictPriority } from '../utils/priorityModel';
+import { createRealtimeSocket, roomForCase, sendWs } from '../utils/realtime';
 import NurseCall from '../components/NurseCall';
 import { PhoneIcon, LaptopIcon } from '../components/CallIcons';
 import styles from './NurseCase.module.css';
@@ -22,7 +23,7 @@ const TRIAGE_LEVELS = [
 
 export default function NurseCase() {
   const { id } = useParams();
-  const { authFetch } = useAuth();
+  const { authFetch, token } = useAuth();
   const [case_, setCase_] = useState(null);
   const [editLevel, setEditLevel] = useState(null);
   const [editReason, setEditReason] = useState('');
@@ -57,6 +58,7 @@ export default function NurseCase() {
       const data = await parseJson(res);
       if (!res.ok) throw new Error(data.error || 'Update failed');
       setCase_(data);
+      broadcastTriageUpdate(data, editReason);
       setMessage('Changes saved.');
     } catch (err) {
       setMessage(err.message || 'Update failed');
@@ -79,6 +81,7 @@ export default function NurseCase() {
       const data = await parseJson(res);
       if (!res.ok) throw new Error(data.error || 'Override failed');
       setCase_(data);
+      broadcastTriageUpdate(data, editReason);
       setMessage('Triage level updated and case marked completed.');
     } catch (err) {
       setMessage(err.message || 'Update failed');
@@ -95,6 +98,7 @@ export default function NurseCase() {
       const data = await parseJson(res);
       if (!res.ok) throw new Error(data.error || 'Failed');
       setCase_(data);
+      broadcastTriageUpdate(data, editReason);
       setMessage('Case marked completed with automated level.');
     } catch (err) {
       setMessage(err.message || 'Failed');
@@ -115,6 +119,7 @@ export default function NurseCase() {
       const data = await parseJson(res);
       if (!res.ok) throw new Error(data.error || 'Failed');
       setCase_(data);
+      broadcastTriageUpdate(data, editReason);
       setEditLevel(data.final_triage_level ?? data.automated_triage_level);
       setEditReason(data.override_reason || '');
       setMessage('Case reopened for review.');
@@ -123,6 +128,28 @@ export default function NurseCase() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const broadcastTriageUpdate = (updatedCase, reason) => {
+    if (!updatedCase?.id || !token) return;
+    const ws = createRealtimeSocket(token);
+    const roomId = roomForCase(updatedCase.id);
+    ws.onopen = () => {
+      sendWs(ws, { type: 'join-room', roomId });
+      // Allow join to process before broadcasting.
+      setTimeout(() => {
+        sendWs(ws, {
+          type: 'triage-update',
+          level: updatedCase.final_triage_level ?? updatedCase.automated_triage_level,
+          reason: reason || updatedCase.override_reason || null,
+          status: updatedCase.status || null,
+        });
+        ws.close();
+      }, 120);
+    };
+    ws.onerror = () => {
+      try { ws.close(); } catch (_) {}
+    };
   };
 
   if (!case_) return <div className={styles.loading}>Loading case…</div>;
