@@ -3,6 +3,7 @@ import pool from '../db/pool.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
 import { TRIAGE_LABELS } from '../lib/triageLogic.js';
 import { logAudit } from '../db/audit.js';
+import { learnFromNurseOverride } from '../db/mlCalibration.js';
 
 const router = Router();
 
@@ -205,6 +206,7 @@ router.patch('/:id/override', requireAuth, requireRole('nurse'), async (req, res
       resourceId: parseInt(id, 10),
       details: { from: updated.automated_triage_level, to: final_triage_level, reason: override_reason },
     });
+    await learnFromNurseOverride(updated.automated_triage_level, updated.final_triage_level);
     res.json({ ...updated, triage_label: TRIAGE_LABELS[updated.final_triage_level] });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -221,6 +223,7 @@ router.patch('/:id/complete', requireAuth, requireRole('nurse'), async (req, res
     const updated = rows[0];
     if (!updated) return res.status(404).json({ error: 'Case not found' });
     await logAudit({ userId: req.userId, action: 'triage_complete', resourceType: 'triage_case', resourceId: parseInt(id, 10) });
+    await learnFromNurseOverride(updated.automated_triage_level, updated.final_triage_level);
     res.json(updated);
   } catch (e) {
     res.status(500).json({ error: e.message });
