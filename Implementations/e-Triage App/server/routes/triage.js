@@ -5,6 +5,7 @@ import pool from '../db/pool.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
 import { computeAutomatedTriageLevel, TRIAGE_LABELS } from '../lib/triageLogic.js';
 import { logAudit } from '../db/audit.js';
+import { applyLevelCalibration } from '../db/mlCalibration.js';
 import jwt from 'jsonwebtoken';
 
 const router = Router();
@@ -95,7 +96,9 @@ router.post('/submit-guest', async (req, res) => {
       demographics: demographics || {},
     });
 
-    const automatedLevel = mlPrediction.predicted_triage_level;
+    const rawPredictedLevel = mlPrediction.predicted_triage_level;
+    const calibration = await applyLevelCalibration(rawPredictedLevel);
+    const automatedLevel = calibration.calibratedLevel;
     const predictedWaitTime = mlPrediction.predicted_wait_time_minutes;
 
     const { rows } = await pool.query(
@@ -139,6 +142,9 @@ router.post('/submit-guest', async (req, res) => {
       resourceId: case_.id,
       details: {
         automated_triage_level: automatedLevel,
+        raw_predicted_triage_level: rawPredictedLevel,
+        calibration_avg_delta: calibration.averageDelta,
+        calibration_sample_count: calibration.sampleCount,
         predicted_wait_time_minutes: predictedWaitTime,
       },
     });
@@ -167,7 +173,9 @@ router.post('/submit', requireAuth, requireRole('patient'), async (req, res) => 
       demographics: demographics || {},
     });
 
-    const automatedLevel = mlPrediction.predicted_triage_level;
+    const rawPredictedLevel = mlPrediction.predicted_triage_level;
+    const calibration = await applyLevelCalibration(rawPredictedLevel);
+    const automatedLevel = calibration.calibratedLevel;
     const predictedWaitTime = mlPrediction.predicted_wait_time_minutes;
 
     const { rows } = await pool.query(
@@ -211,6 +219,9 @@ router.post('/submit', requireAuth, requireRole('patient'), async (req, res) => 
       resourceId: case_.id,
       details: {
         automated_triage_level: automatedLevel,
+        raw_predicted_triage_level: rawPredictedLevel,
+        calibration_avg_delta: calibration.averageDelta,
+        calibration_sample_count: calibration.sampleCount,
         predicted_wait_time_minutes: predictedWaitTime,
       },
     });
