@@ -6,6 +6,7 @@ import { triageRouter } from './routes/triage.js';
 import { patientsRouter } from './routes/patients.js';
 import { auditRouter } from './routes/audit.js';
 import { otpRouter } from './routes/otp.js';
+import { setupRealtime } from './realtime/wsServer.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -36,6 +37,7 @@ app.use('/api', (req, res) => {
 
 const port = Number(PORT) || 3001;
 const server = app.listen(port, () => console.log(`Server running at http://localhost:${server.address().port}`));
+setupRealtime(server);
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
     console.error(`Port ${port} is in use. Stop the other process or set PORT in .env (e.g. PORT=3002).`);

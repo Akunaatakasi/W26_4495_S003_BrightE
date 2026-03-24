@@ -11,6 +11,9 @@ export default function Layout() {
     navigate('/');
   };
 
+  const displayName = user?.full_name?.trim() || null;
+  const displayEmail = user?.email?.trim() || null;
+
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
@@ -39,10 +42,26 @@ export default function Layout() {
             </>
           )}
 
+          {user?.role === 'patient' && (
+            <>
+              <Link to="/triage/new">New triage</Link>
+              <Link to="/patient">My cases</Link>
+            </>
+          )}
+
           {user && (
-            <button type="button" className={styles.logout} onClick={handleLogout}>
-              Log out
-            </button>
+            <>
+              <div className={styles.userInfo} title={displayEmail || undefined}>
+                <div className={styles.userName}>
+                  {displayName || displayEmail || 'Signed in'}
+                  {user?.role ? <span className={styles.userRole}>{user.role}</span> : null}
+                </div>
+                {displayName && displayEmail ? <div className={styles.userEmail}>{displayEmail}</div> : null}
+              </div>
+              <button type="button" className={styles.logout} onClick={handleLogout}>
+                Log out
+              </button>
+            </>
           )}
         </nav>
       </header>

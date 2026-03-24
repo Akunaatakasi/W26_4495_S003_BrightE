@@ -13,6 +13,7 @@ import {
   DEMO_ONLY,
   DEMO_GUEST_TOKEN
 } from '../utils/api';
+import PatientCall from '../components/PatientCall';
 import styles from './NewTriage.module.css';
 
 const SYMPTOM_OPTIONS = [
@@ -44,6 +45,8 @@ export default function NewTriage() {
   const [urgency, setUrgency] = useState(5);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
+  const [activeCall, setActiveCall] = useState(false);
+  const [liveCallMsg, setLiveCallMsg] = useState('');
   const [queueCount, setQueueCount] = useState(null);
   const { user, authFetch } = useAuth();
 
@@ -256,6 +259,8 @@ export default function NewTriage() {
             type="button"
             className={styles.secondary}
             onClick={() => {
+              setActiveCall(false);
+              setLiveCallMsg('');
               setResult(null);
               setChiefComplaint('');
               setSymptoms([]);
@@ -264,7 +269,27 @@ export default function NewTriage() {
           >
             Submit another
           </button>
+          {result?.id && (
+            <button
+              type="button"
+              className={styles.secondary}
+              onClick={() => setActiveCall(true)}
+            >
+              Join telemedicine call
+            </button>
+          )}
         </div>
+        {liveCallMsg && <p className={styles.note}>{liveCallMsg}</p>}
+        {activeCall && result?.id && (
+          <PatientCall
+            caseId={result.id}
+            tokenOverride={getGuestToken()}
+            onClose={() => setActiveCall(false)}
+            onTriageUpdate={(msg) => {
+              setLiveCallMsg(`Nurse updated your triage to level ${msg.level}${msg.reason ? ` (${msg.reason})` : ''}.`);
+            }}
+          />
+        )}
       </div>
     );
   }

@@ -9,7 +9,10 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: 5173,
-      proxy: { '/api': { target: `http://localhost:${apiPort}`, changeOrigin: true } },
+      proxy: {
+        '/api': { target: `http://localhost:${apiPort}`, changeOrigin: true },
+        '/ws': { target: `ws://localhost:${apiPort}`, ws: true, changeOrigin: true },
+      },
     },
   };
 });
