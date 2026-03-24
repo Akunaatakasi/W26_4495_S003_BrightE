@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { parseJson } from '../utils/api';
+import PatientCall from '../components/PatientCall';
 import styles from './PatientDashboard.module.css';
 
 function formatDate(iso) {
@@ -12,6 +13,8 @@ function formatDate(iso) {
 export default function PatientDashboard() {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeCallCase, setActiveCallCase] = useState(null);
+  const [liveUpdate, setLiveUpdate] = useState('');
   const { authFetch } = useAuth();
 
   useEffect(() => {
@@ -43,9 +46,37 @@ export default function PatientDashboard() {
               <p className={styles.complaint}>{c.chief_complaint || 'No chief complaint'}</p>
               <p className={styles.level}>{c.triage_label}</p>
               <p className={styles.date}>Submitted {formatDate(c.submitted_at)}</p>
+              <div className={styles.actions}>
+                <button type="button" className={styles.callBtn} onClick={() => setActiveCallCase(c)}>
+                  Join telemedicine call
+                </button>
+              </div>
             </li>
           ))}
         </ul>
+      )}
+      {liveUpdate && <div className={styles.liveUpdate}>{liveUpdate}</div>}
+      {activeCallCase && (
+        <PatientCall
+          caseId={activeCallCase.id}
+          onClose={() => setActiveCallCase(null)}
+          onTriageUpdate={(msg) => {
+            const level = Number(msg.level);
+            const labels = {
+              1: 'Level 1 – Immediate (life-saving intervention)',
+              2: 'Level 2 – High risk / time-critical',
+              3: 'Level 3 – Stable, multiple resources',
+              4: 'Level 4 – Stable, single resource',
+              5: 'Level 5 – Stable, minimal resources',
+            };
+            setCases((prev) => prev.map((item) => (
+              item.id === activeCallCase.id
+                ? { ...item, final_triage_level: level, triage_label: labels[level] || item.triage_label, status: msg.status || item.status }
+                : item
+            )));
+            setLiveUpdate(`Live update for case #${activeCallCase.id}: nurse set triage to level ${level}${msg.reason ? ` (${msg.reason})` : ''}.`);
+          }}
+        />
       )}
     </div>
   );
