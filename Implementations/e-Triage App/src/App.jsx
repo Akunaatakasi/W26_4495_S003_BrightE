@@ -11,6 +11,7 @@ import AuditLog from './pages/AuditLog';
 import DoctorDashboard from './pages/DoctorDashboard';
 import DoctorCase from './pages/DoctorCase';
 import QueueDashboard from './pages/QueueDashboard';
+import PatientDashboard from './pages/PatientDashboard';
 
 function PrivateRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="staff/register" element={<Register />} />
         <Route path="login" element={<Navigate to="/staff" replace />} />
         <Route path="triage/new" element={<NewTriage />} />
+        <Route path="patient" element={<PrivateRoute role="patient"><PatientDashboard /></PrivateRoute>} />
         <Route path="nurse" element={<PrivateRoute role="nurse"><NurseDashboard /></PrivateRoute>} />
         <Route path="nurse/case/:id" element={<PrivateRoute role="nurse"><NurseCase /></PrivateRoute>} />
         <Route path="nurse/audit" element={<PrivateRoute role="nurse"><AuditLog /></PrivateRoute>} />

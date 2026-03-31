@@ -124,3 +124,32 @@
   font-size: 0.8rem;
   color: var(--text-subtle);
 }
+
+.actions {
+  margin-top: 0.75rem;
+}
+
+.callBtn {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.callBtn:hover {
+  filter: brightness(1.08);
+}
+
+.liveUpdate {
+  margin-top: 1rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--text);
+  font-size: 0.85rem;
+}
