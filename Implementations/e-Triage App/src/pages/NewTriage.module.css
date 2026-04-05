@@ -326,6 +326,258 @@
   opacity: 0.9;
 }
 
+.otpDevNote {
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.55;
+  font-size: 0.875rem;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+
+.otpDevNote code {
+  font-size: 0.8em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.staffNotify {
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+
+.staffNotifyTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--accent);
+}
+
+.staffNotifyList {
+  margin: 0 0 0.65rem 1rem;
+  padding: 0;
+  line-height: 1.5;
+  font-size: 0.875rem;
+}
+
+.staffNotifyList li {
+  margin-bottom: 0.35rem;
+}
+
+.resultTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.resultH1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text);
+}
+
+.notifyBell {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.accountHint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0 0 1rem;
+}
+
+.accountHint a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.notifyBannerRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 1rem;
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.resultComplaint {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.resultMeta {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.resultMeta p {
+  margin: 0.25rem 0;
+}
+
+.statusChip {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: var(--warning-dim);
+  color: var(--warning);
+}
+
+.statusChip[data-status='under_review'] {
+  background: var(--success-dim);
+  color: var(--success);
+}
+
+.statusChip[data-status='completed'] {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.statusChip[data-status='requested_doctor'] {
+  background: rgba(167, 139, 250, 0.15);
+  color: #c4b5fd;
+}
+
+.statusChip[data-status='doctor_summoned'] {
+  background: rgba(217, 119, 6, 0.2);
+  color: #fcd34d;
+}
+
+.statusChip[data-status='nurse_watch'] {
+  background: rgba(251, 191, 36, 0.12);
+  color: #fcd34d;
+}
+
+.statusChip[data-status='withdrawn'],
+.statusChip[data-status='patient_resolved'] {
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--text-muted);
+}
+
+.doctorSeekAlert {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  background: rgba(251, 191, 36, 0.1);
+  font-size: 0.88rem;
+  color: #fde68a;
+}
+
+.nurseRecommendation {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid #34d399;
+  background: rgba(52, 211, 153, 0.08);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.clinicalGuidance {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid var(--accent);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.guidanceLabel {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+}
+
+.terminalNote {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.guestActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1rem 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dangerOutline {
+  padding: 0.45rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  background: transparent;
+  color: #fca5a5;
+  cursor: pointer;
+}
+
+.dangerOutline:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.dangerOutline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resolveBtn {
+  padding: 0.45rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(74, 222, 128, 0.45);
+  background: rgba(74, 222, 128, 0.12);
+  color: #86efac;
+  cursor: pointer;
+}
+
+.resolveBtn:hover:not(:disabled) {
+  background: rgba(74, 222, 128, 0.2);
+}
+
+.resolveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .otpCodeBox {
   padding: 1.25rem 1.5rem;
   background: var(--accent-dim);
@@ -475,4 +727,54 @@
   border: 1px solid var(--border);
   font-size: 0.9rem;
   color: var(--text-muted);
+}
+.selectHint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.multiSelect {
+  width: 100%;
+  min-height: 220px;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.multiSelect:hover {
+  border-color: var(--border-strong, var(--border));
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.multiSelect:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.multiSelect option {
+  background: #0f1419;
+  color: var(--text);
+  padding: 0.45rem 0.5rem;
+}
+
+.selectedSymptoms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.selectedTag {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.12);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 500;
 }
