@@ -2,6 +2,14 @@
   max-width: 100%;
 }
 
+.headRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
 .head {
   margin-bottom: 0.75rem;
 }
@@ -12,6 +20,45 @@
   letter-spacing: -0.03em;
   margin: 0;
   color: var(--text);
+}
+
+.headActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.refreshBtn {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.refreshBtn:hover {
+  border-color: var(--border-strong);
+}
+.refreshBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lastUpdated {
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+  white-space: nowrap;
+}
+
+.error {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 92, 92, 0.3);
+  background: rgba(255, 92, 92, 0.08);
+  color: rgba(255, 215, 215, 0.92);
+  font-size: 0.9rem;
 }
 
 .intro {
@@ -142,4 +189,139 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(34, 211, 238, 0.35);
   color: #0f1419;
+}
+.tabs {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.tab:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.activeTab {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  color: var(--text);
+}
+
+.cardGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.cardLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+  border-radius: var(--radius);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cardLink:hover {
+  transform: translateY(-2px);
+}
+
+.cardLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cardGrid .card {
+  height: 100%;
+  margin: 0;
+  flex-direction: column;
+  align-items: stretch;
+  cursor: pointer;
+}
+
+.cardTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.cardTop .level {
+  margin-bottom: 0;
+}
+
+.triageLabel {
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.patientLine {
+  margin: 0 0 0.35rem;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.emailMuted {
+  color: var(--text-subtle);
+  font-weight: 400;
+}
+
+.metaRow {
+  margin: 0.15rem 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.metaLabel {
+  color: var(--text-subtle);
+  font-weight: 600;
+  margin-right: 0.35rem;
+}
+
+.recSnippet {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardFoot {
+  margin: 0.65rem 0 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+}
+
+.historyCard {
+  border-left: 3px solid rgba(34, 211, 238, 0.35);
 }
