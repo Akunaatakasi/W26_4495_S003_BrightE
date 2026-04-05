@@ -90,6 +90,8 @@ export function submitTriageAsGuest(payload) {
     submitted_at: new Date().toISOString(),
     first_reviewed_at: null,
     completed_at: null,
+    concluded_at: null,
+    concluded_by: null,
   };
   cases.push(newCase);
   setCases(cases);
@@ -103,20 +105,20 @@ function seedMockData() {
   const now = () => new Date().toISOString();
   const t = (minsAgo) => new Date(Date.now() - minsAgo * 60000).toISOString();
   const cases = [
-    { id: 1, patient_id: 0, demographics: { age: '34', gender: 'female' }, chief_complaint: 'Chest pain and shortness of breath', symptoms: ['cardiac_chest_pain', 'difficulty_breathing'], self_reported_urgency: 2, automated_triage_level: 2, final_triage_level: 2, overridden_by: 2, overridden_at: now(), override_reason: 'Confirmed high acuity', status: 'completed', submitted_at: t(60), first_reviewed_at: now(), completed_at: now() },
+    { id: 1, patient_id: 0, demographics: { age: '34', gender: 'female' }, chief_complaint: 'Chest pain and shortness of breath', symptoms: ['cardiac_chest_pain', 'difficulty_breathing'], self_reported_urgency: 2, automated_triage_level: 2, final_triage_level: 2, overridden_by: 2, overridden_at: now(), override_reason: 'Confirmed high acuity', status: 'requested_doctor', submitted_at: t(60), first_reviewed_at: now(), completed_at: null, concluded_at: null, concluded_by: null },
     { id: 2, patient_id: 0, demographics: { age: '28', gender: 'male' }, chief_complaint: 'Severe headache for 2 days', symptoms: ['headache'], self_reported_urgency: 3, automated_triage_level: 3, final_triage_level: null, overridden_by: null, overridden_at: null, override_reason: null, status: 'submitted', submitted_at: t(30), first_reviewed_at: null, completed_at: null },
-    { id: 3, patient_id: 0, demographics: { age: '5', gender: 'male' }, chief_complaint: 'High fever and cough', symptoms: ['high_fever'], self_reported_urgency: 3, automated_triage_level: 3, final_triage_level: 3, overridden_by: 2, overridden_at: now(), override_reason: null, status: 'completed', submitted_at: t(120), first_reviewed_at: now(), completed_at: now() },
+    { id: 3, patient_id: 0, demographics: { age: '5', gender: 'male' }, chief_complaint: 'High fever and cough', symptoms: ['high_fever'], self_reported_urgency: 3, automated_triage_level: 3, final_triage_level: 3, overridden_by: 2, overridden_at: now(), override_reason: null, status: 'requested_doctor', submitted_at: t(120), first_reviewed_at: now(), completed_at: null, concluded_at: null, concluded_by: null },
     { id: 4, patient_id: 0, demographics: { age: '52', gender: 'female' }, chief_complaint: 'Cut finger while cooking', symptoms: ['laceration'], self_reported_urgency: 4, automated_triage_level: 4, final_triage_level: null, overridden_by: null, overridden_at: null, override_reason: null, status: 'submitted', submitted_at: t(15), first_reviewed_at: null, completed_at: null },
-    { id: 5, patient_id: 0, demographics: { age: '67', gender: 'male' }, chief_complaint: 'Unresponsive, family called 911', symptoms: ['unconscious'], self_reported_urgency: 1, automated_triage_level: 1, final_triage_level: 1, overridden_by: 2, overridden_at: now(), override_reason: 'Level 1 confirmed', status: 'completed', submitted_at: t(90), first_reviewed_at: now(), completed_at: now() },
+    { id: 5, patient_id: 0, demographics: { age: '67', gender: 'male' }, chief_complaint: 'Unresponsive, family called 911', symptoms: ['unconscious'], self_reported_urgency: 1, automated_triage_level: 1, final_triage_level: 1, overridden_by: 2, overridden_at: now(), override_reason: 'Level 1 confirmed', status: 'requested_doctor', submitted_at: t(90), first_reviewed_at: now(), completed_at: null, concluded_at: null, concluded_by: null },
     { id: 6, patient_id: 0, demographics: { age: '41', gender: 'female' }, chief_complaint: 'Abdominal pain and nausea', symptoms: ['abdominal_pain'], self_reported_urgency: 3, automated_triage_level: 3, final_triage_level: null, overridden_by: null, overridden_at: null, override_reason: null, status: 'submitted', submitted_at: t(10), first_reviewed_at: null, completed_at: null },
-    { id: 7, patient_id: 0, demographics: { age: '22', gender: 'male' }, chief_complaint: 'Sore throat, difficulty swallowing', symptoms: ['sore_throat'], self_reported_urgency: 4, automated_triage_level: 4, final_triage_level: 4, overridden_by: 2, overridden_at: now(), override_reason: null, status: 'completed', submitted_at: t(180), first_reviewed_at: now(), completed_at: now() },
-    { id: 8, patient_id: 0, demographics: { age: '59', gender: 'female' }, chief_complaint: 'Heavy bleeding from wound', symptoms: ['heavy_bleeding'], self_reported_urgency: 2, automated_triage_level: 2, final_triage_level: 2, overridden_by: 2, overridden_at: now(), override_reason: 'Controlled at triage', status: 'completed', submitted_at: t(75), first_reviewed_at: now(), completed_at: now() },
+    { id: 7, patient_id: 0, demographics: { age: '22', gender: 'male' }, chief_complaint: 'Sore throat, difficulty swallowing', symptoms: ['sore_throat'], self_reported_urgency: 4, automated_triage_level: 4, final_triage_level: 4, overridden_by: 2, overridden_at: now(), override_reason: null, status: 'requested_doctor', submitted_at: t(180), first_reviewed_at: now(), completed_at: null, concluded_at: null, concluded_by: null },
+    { id: 8, patient_id: 0, demographics: { age: '59', gender: 'female' }, chief_complaint: 'Heavy bleeding from wound', symptoms: ['heavy_bleeding'], self_reported_urgency: 2, automated_triage_level: 2, final_triage_level: 2, overridden_by: 2, overridden_at: now(), override_reason: 'Controlled at triage', status: 'requested_doctor', submitted_at: t(75), first_reviewed_at: now(), completed_at: null, concluded_at: null, concluded_by: null },
     { id: 9, patient_id: 0, demographics: { age: '19', gender: 'other' }, chief_complaint: 'Prescription refill needed', symptoms: ['prescription_refill'], self_reported_urgency: 5, automated_triage_level: 5, final_triage_level: null, overridden_by: null, overridden_at: null, override_reason: null, status: 'submitted', submitted_at: t(5), first_reviewed_at: null, completed_at: null },
-    { id: 10, patient_id: 0, demographics: { age: '73', gender: 'male' }, chief_complaint: 'Numbness on left side, slurred speech', symptoms: ['stroke_symptoms'], self_reported_urgency: 1, automated_triage_level: 1, final_triage_level: 1, overridden_by: 2, overridden_at: now(), override_reason: 'Stroke alert', status: 'completed', submitted_at: t(105), first_reviewed_at: now(), completed_at: now() },
+    { id: 10, patient_id: 0, demographics: { age: '73', gender: 'male' }, chief_complaint: 'Numbness on left side, slurred speech', symptoms: ['stroke_symptoms'], self_reported_urgency: 1, automated_triage_level: 1, final_triage_level: 1, overridden_by: 2, overridden_at: now(), override_reason: 'Stroke alert', status: 'requested_doctor', submitted_at: t(105), first_reviewed_at: now(), completed_at: null, concluded_at: null, concluded_by: null },
     { id: 11, patient_id: 0, demographics: { age: '45', gender: 'male' }, chief_complaint: 'Severe allergic reaction after eating nuts', symptoms: ['severe_allergic'], self_reported_urgency: 2, automated_triage_level: 2, final_triage_level: null, overridden_by: null, overridden_at: null, override_reason: null, status: 'submitted', submitted_at: t(8), first_reviewed_at: null, completed_at: null },
-    { id: 12, patient_id: 0, demographics: { age: '31', gender: 'female' }, chief_complaint: 'Seizure at work', symptoms: ['seizure'], self_reported_urgency: 2, automated_triage_level: 2, final_triage_level: 2, overridden_by: 2, overridden_at: now(), override_reason: 'Stable post-ictal', status: 'completed', submitted_at: t(45), first_reviewed_at: now(), completed_at: now() },
+    { id: 12, patient_id: 0, demographics: { age: '31', gender: 'female' }, chief_complaint: 'Seizure at work', symptoms: ['seizure'], self_reported_urgency: 2, automated_triage_level: 2, final_triage_level: 2, overridden_by: 2, overridden_at: now(), override_reason: 'Stable post-ictal', status: 'requested_doctor', submitted_at: t(45), first_reviewed_at: now(), completed_at: null, concluded_at: null, concluded_by: null },
     { id: 13, patient_id: 0, demographics: { age: '8', gender: 'female' }, chief_complaint: 'Fell off bike, possible arm fracture', symptoms: ['minor_injury'], self_reported_urgency: 4, automated_triage_level: 4, final_triage_level: null, overridden_by: null, overridden_at: null, override_reason: null, status: 'submitted', submitted_at: t(12), first_reviewed_at: null, completed_at: null },
-    { id: 14, patient_id: 0, demographics: { age: '56', gender: 'male' }, chief_complaint: 'Persistent chest pressure', symptoms: ['cardiac_chest_pain'], self_reported_urgency: 2, automated_triage_level: 2, final_triage_level: 2, overridden_by: 2, overridden_at: now(), override_reason: 'Cardiac workup ordered', status: 'completed', submitted_at: t(55), first_reviewed_at: now(), completed_at: now() },
+    { id: 14, patient_id: 0, demographics: { age: '56', gender: 'male' }, chief_complaint: 'Persistent chest pressure', symptoms: ['cardiac_chest_pain'], self_reported_urgency: 2, automated_triage_level: 2, final_triage_level: 2, overridden_by: 2, overridden_at: now(), override_reason: 'Cardiac workup ordered', status: 'requested_doctor', submitted_at: t(55), first_reviewed_at: now(), completed_at: null, concluded_at: null, concluded_by: null },
     { id: 15, patient_id: 0, demographics: { age: '24', gender: 'female' }, chief_complaint: 'Migraine, vomiting', symptoms: ['headache'], self_reported_urgency: 3, automated_triage_level: 3, final_triage_level: null, overridden_by: null, overridden_at: null, override_reason: null, status: 'submitted', submitted_at: t(3), first_reviewed_at: null, completed_at: null },
   ];
   setCases(cases);
@@ -185,19 +187,72 @@ export function mockApi(path, options, user) {
     return Promise.resolve(fakeResponse(cases));
   }
 
-  // GET /patients/completed (doctor: completed triage cases only)
+  // GET /patients/completed (doctor: awaiting review — forwarded by nurse, not yet concluded)
   if (method === 'GET' && path === '/patients/completed') {
     if (getCases().length === 0) seedMockData();
     const completed = getCases()
-      .filter((c) => c.status === 'completed')
+      .filter((c) => c.status === 'requested_doctor' && !c.concluded_at)
       .map((c) => ({
         ...c,
         patient_name: DEMO_USERS[c.patient_id]?.full_name ?? 'Guest',
         patient_email: DEMO_USERS[c.patient_id]?.email ?? '—',
         triage_label: TRIAGE_LABELS[c.final_triage_level ?? c.automated_triage_level],
+        handling_nurse_name: c.handling_nurse_name ?? 'Demo Nurse',
       }));
-    completed.sort((a, b) => (a.final_triage_level - b.final_triage_level) || new Date(a.completed_at) - new Date(b.completed_at));
+    completed.sort(
+      (a, b) =>
+        (a.final_triage_level - b.final_triage_level) ||
+        new Date(a.overridden_at || a.submitted_at) - new Date(b.overridden_at || b.submitted_at)
+    );
     return Promise.resolve(fakeResponse(completed));
+  }
+
+  // GET /patients/doctor-summoned (doctor: patients this doctor requested at desk)
+  if (method === 'GET' && path === '/patients/doctor-summoned') {
+    if (getCases().length === 0) seedMockData();
+    const rows = getCases()
+      .filter(
+        (c) =>
+          c.status === 'doctor_summoned' &&
+          !c.concluded_at &&
+          c.doctor_seeking_patient_by === user.id
+      )
+      .map((c) => ({
+        ...c,
+        patient_name: DEMO_USERS[c.patient_id]?.full_name ?? 'Guest',
+        patient_email: DEMO_USERS[c.patient_id]?.email ?? '—',
+        triage_label: TRIAGE_LABELS[c.final_triage_level ?? c.automated_triage_level],
+        handling_nurse_name: c.handling_nurse_name ?? 'Demo Nurse',
+      }));
+    rows.sort((a, b) => {
+      const t = new Date(b.doctor_seeking_patient_at || 0) - new Date(a.doctor_seeking_patient_at || 0);
+      if (t !== 0) return t;
+      return (a.final_triage_level ?? 99) - (b.final_triage_level ?? 99);
+    });
+    return Promise.resolve(fakeResponse(rows));
+  }
+
+  // GET /patients/doctor-history
+  if (method === 'GET' && path === '/patients/doctor-history') {
+    if (getCases().length === 0) seedMockData();
+    const rows = getCases()
+      .filter((c) => c.concluded_by === user.id)
+      .map((c) => ({
+        id: c.id,
+        patient_id: c.patient_id,
+        chief_complaint: c.chief_complaint,
+        automated_triage_level: c.automated_triage_level,
+        final_triage_level: c.final_triage_level,
+        completed_at: c.completed_at,
+        concluded_at: c.concluded_at,
+        patient_name: DEMO_USERS[c.patient_id]?.full_name ?? 'Guest',
+        patient_email: DEMO_USERS[c.patient_id]?.email ?? '—',
+        handling_nurse_name: c.handling_nurse_name ?? 'Demo Nurse',
+        doctor_name: DEMO_USERS[user.id]?.full_name ?? 'You',
+        triage_label: TRIAGE_LABELS[c.final_triage_level ?? c.automated_triage_level],
+      }));
+    rows.sort((a, b) => new Date(b.concluded_at || 0) - new Date(a.concluded_at || 0));
+    return Promise.resolve(fakeResponse(rows));
   }
 
   // PATCH /patients/:id – edit case (triage level, reason, status) without completing
@@ -217,9 +272,11 @@ export function mockApi(path, options, user) {
     if (body.status === 'under_review') {
       updated.status = 'under_review';
       updated.completed_at = null;
+      updated.concluded_at = null;
+      updated.concluded_by = null;
     } else if (body.status === 'completed') {
-      updated.status = 'completed';
-      updated.completed_at = new Date().toISOString();
+      updated.status = 'requested_doctor';
+      updated.completed_at = null;
       updated.final_triage_level = updated.final_triage_level ?? updated.automated_triage_level;
     }
     cases[idx] = updated;
@@ -241,6 +298,12 @@ export function mockApi(path, options, user) {
       patient_name: DEMO_USERS[c.patient_id]?.full_name ?? 'Guest',
       patient_email: DEMO_USERS[c.patient_id]?.email ?? '—',
       triage_label: TRIAGE_LABELS[c.final_triage_level ?? c.automated_triage_level],
+      handling_nurse_name:
+        c.handling_nurse_name ?? DEMO_USERS[c.overridden_by]?.full_name ?? null,
+      doctor_seeking_doctor_name:
+        c.doctor_seeking_patient_by != null
+          ? DEMO_USERS[c.doctor_seeking_patient_by]?.full_name ?? null
+          : null,
     };
     if (user.role === 'nurse' && c.status === 'submitted') {
       withPatient.status = 'under_review';
@@ -265,8 +328,8 @@ export function mockApi(path, options, user) {
       overridden_by: user.id,
       overridden_at: new Date().toISOString(),
       override_reason: body.override_reason || null,
-      status: 'completed',
-      completed_at: new Date().toISOString(),
+      status: 'requested_doctor',
+      completed_at: null,
     };
     cases[idx] = updated;
     setCases(cases);
@@ -291,14 +354,75 @@ export function mockApi(path, options, user) {
     const updated = {
       ...c,
       final_triage_level: c.final_triage_level ?? c.automated_triage_level,
-      status: 'completed',
-      completed_at: new Date().toISOString(),
+      status: 'requested_doctor',
+      completed_at: null,
     };
     cases[idx] = updated;
     setCases(cases);
     updateFromOverride(c, updated.final_triage_level);
     appendAudit({ user_id: user.id, action: 'triage_complete', resource_type: 'triage_case', resource_id: id });
     return Promise.resolve(fakeResponse({ ...updated, triage_label: TRIAGE_LABELS[updated.final_triage_level] }));
+  }
+
+  // PATCH /patients/:id/doctor-request-patient
+  if (method === 'PATCH' && path.includes('/doctor-request-patient')) {
+    const id = parseInt(path.replace('/patients/', '').replace('/doctor-request-patient', ''), 10);
+    const cases = getCases();
+    const idx = cases.findIndex((x) => x.id === id);
+    if (idx === -1) return Promise.resolve(fakeResponse({ error: 'Case not found' }, false));
+    const c = cases[idx];
+    if (c.status !== 'requested_doctor' || c.concluded_at) {
+      return Promise.resolve(fakeResponse({ error: 'Case not available for desk request' }, false));
+    }
+    const note = body.note != null ? String(body.note).trim() : '';
+    const ts = new Date().toISOString();
+    const updated = {
+      ...c,
+      status: 'doctor_summoned',
+      doctor_seeking_patient_at: ts,
+      doctor_seeking_patient_by: user.id,
+      doctor_seeking_note: note || null,
+    };
+    cases[idx] = updated;
+    setCases(cases);
+    appendAudit({ user_id: user.id, action: 'doctor_seek_patient', resource_type: 'triage_case', resource_id: id });
+    return Promise.resolve(fakeResponse({ ok: true, id: updated.id, status: 'doctor_summoned' }));
+  }
+
+  // PATCH /patients/:id/conclude
+  if (method === 'PATCH' && path.includes('/conclude')) {
+    const id = parseInt(path.replace('/patients/', '').replace('/conclude', ''), 10);
+    const cases = getCases();
+    const idx = cases.findIndex((x) => x.id === id);
+    if (idx === -1) return Promise.resolve(fakeResponse({ error: 'Case not found' }, false));
+    const c = cases[idx];
+    if (c.concluded_at) return Promise.resolve(fakeResponse({ error: 'Already concluded' }, false));
+    if (!['requested_doctor', 'doctor_summoned'].includes(c.status)) {
+      return Promise.resolve(fakeResponse({ error: 'Case not in doctor queue' }, false));
+    }
+    const ts = new Date().toISOString();
+    const updated = {
+      ...c,
+      status: 'completed',
+      completed_at: ts,
+      concluded_at: ts,
+      concluded_by: user.id,
+      doctor_seeking_patient_at: null,
+      doctor_seeking_patient_by: null,
+      doctor_seeking_note: null,
+    };
+    cases[idx] = updated;
+    setCases(cases);
+    appendAudit({ user_id: user.id, action: 'doctor_conclude', resource_type: 'triage_case', resource_id: id });
+    return Promise.resolve(
+      fakeResponse({
+        ok: true,
+        ...updated,
+        patient_name: DEMO_USERS[updated.patient_id]?.full_name ?? 'Guest',
+        patient_email: DEMO_USERS[updated.patient_id]?.email ?? '—',
+        triage_label: TRIAGE_LABELS[updated.final_triage_level ?? updated.automated_triage_level],
+      })
+    );
   }
 
   // POST /triage/submit (logged-in user only; guests use submitTriageAsGuest)
@@ -326,6 +450,8 @@ export function mockApi(path, options, user) {
       submitted_at: new Date().toISOString(),
       first_reviewed_at: null,
       completed_at: null,
+      concluded_at: null,
+      concluded_by: null,
     };
     cases.push(newCase);
     setCases(cases);
