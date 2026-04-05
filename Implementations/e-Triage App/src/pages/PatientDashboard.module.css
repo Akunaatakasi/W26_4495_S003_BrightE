@@ -106,6 +106,171 @@
   color: var(--accent);
 }
 
+.status[data-status="requested_doctor"] {
+  background: rgba(167, 139, 250, 0.15);
+  color: #c4b5fd;
+}
+
+.status[data-status="doctor_summoned"] {
+  background: rgba(217, 119, 6, 0.2);
+  color: #fcd34d;
+}
+
+.status[data-status="nurse_watch"] {
+  background: rgba(251, 191, 36, 0.12);
+  color: #fcd34d;
+}
+
+.status[data-status="withdrawn"],
+.status[data-status="patient_resolved"] {
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--text-muted);
+}
+
+.tabBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(251, 113, 133, 0.25);
+  color: #fda4af;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.bell::before {
+  content: '🔔';
+  font-size: 0.65rem;
+}
+
+.notifyBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.linkish {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.metaLine {
+  margin: 0.2rem 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.doctorSeekAlert {
+  margin: 0.65rem 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  background: rgba(251, 191, 36, 0.1);
+  font-size: 0.88rem;
+  color: #fde68a;
+}
+
+.nurseRecommendation {
+  margin: 0.65rem 0;
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid #34d399;
+  background: rgba(52, 211, 153, 0.08);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.guidance {
+  margin: 0.65rem 0;
+  padding: 0.65rem 0.85rem;
+  border-left: 3px solid var(--accent);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.guidanceLabel {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
+}
+
+.patientActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+.dangerOutline {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  background: transparent;
+  color: #fca5a5;
+  cursor: pointer;
+}
+
+.dangerOutline:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.dangerOutline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resolveBtn {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(74, 222, 128, 0.45);
+  background: rgba(74, 222, 128, 0.12);
+  color: #86efac;
+  cursor: pointer;
+}
+
+.resolveBtn:hover:not(:disabled) {
+  background: rgba(74, 222, 128, 0.2);
+}
+
+.resolveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cardMuted {
+  opacity: 0.88;
+}
+
 .complaint {
   margin: 0 0 0.4rem;
   font-size: 0.95rem;
@@ -152,4 +317,37 @@
   background: rgba(34, 211, 238, 0.08);
   color: var(--text);
   font-size: 0.85rem;
+}
+.tabs {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.tab:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.activeTab {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.notesPanel {
+  margin-top: 0.25rem;
 }
