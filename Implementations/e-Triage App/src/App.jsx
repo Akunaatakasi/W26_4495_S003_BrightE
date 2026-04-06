@@ -10,8 +10,9 @@ import NurseCase from './pages/NurseCase';
 import AuditLog from './pages/AuditLog';
 import DoctorDashboard from './pages/DoctorDashboard';
 import DoctorCase from './pages/DoctorCase';
-import QueueDashboard from './pages/QueueDashboard';
 import PatientDashboard from './pages/PatientDashboard';
+import PublicQueue from './pages/PublicQueue';
+import About from './pages/About';
 
 function PrivateRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -30,13 +31,14 @@ export default function App() {
         <Route path="staff/register" element={<Register />} />
         <Route path="login" element={<Navigate to="/staff" replace />} />
         <Route path="triage/new" element={<NewTriage />} />
+        <Route path="er-queue" element={<PublicQueue />} />
+        <Route path="about" element={<About />} />
         <Route path="patient" element={<PrivateRoute role="patient"><PatientDashboard /></PrivateRoute>} />
         <Route path="nurse" element={<PrivateRoute role="nurse"><NurseDashboard /></PrivateRoute>} />
         <Route path="nurse/case/:id" element={<PrivateRoute role="nurse"><NurseCase /></PrivateRoute>} />
         <Route path="nurse/audit" element={<PrivateRoute role="nurse"><AuditLog /></PrivateRoute>} />
         <Route path="doctor" element={<PrivateRoute role="doctor"><DoctorDashboard /></PrivateRoute>} />
         <Route path="doctor/case/:id" element={<PrivateRoute role="doctor"><DoctorCase /></PrivateRoute>} />
-        <Route path="/queue" element={<QueueDashboard />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

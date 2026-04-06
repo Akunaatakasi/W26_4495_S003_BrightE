@@ -1,0 +1,158 @@
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0.5rem 0 2rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  color: var(--text);
+}
+
+.intro {
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.error {
+  padding: 0.75rem 1rem;
+  background: var(--danger-dim);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  margin-bottom: 1rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.statActive {
+  border-color: rgba(34, 211, 238, 0.35);
+  background: rgba(34, 211, 238, 0.06);
+}
+
+.statDone {
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.03em;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: capitalize;
+}
+
+.statHint {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  line-height: 1.4;
+}
+
+.section {
+  margin-top: 1.5rem;
+}
+
+.h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  color: var(--text);
+}
+
+.note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th,
+.table td {
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.mono {
+  font-family: ui-monospace, monospace;
+  font-weight: 600;
+}
+
+.phase {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+}
+
+.phase[data-phase='pending'] {
+  background: var(--warning-dim);
+  color: var(--warning);
+}
+
+.phase[data-phase='active'] {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.time {
+  color: var(--text-subtle);
+  font-size: 0.8rem;
+}
+
+.footer {
+  margin-top: 2rem;
+}
+
+.footer a {
+  color: var(--accent);
+  font-weight: 500;
+}
