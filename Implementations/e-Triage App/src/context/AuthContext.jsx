@@ -4,6 +4,9 @@ import { parseJson, DEMO_ONLY, DEMO_STAFF_TOKEN } from '../utils/api';
 const AuthContext = createContext(null);
 const API = '/api';
 const DEMO_USER_KEY = 'bright_demo_user';
+const TOKEN_KEY = 'bright_token';
+/** Tab session only — closing the tab clears login (see api.js for triage keys). */
+const authStorage = typeof sessionStorage !== 'undefined' ? sessionStorage : null;
 
 function getDemoUser(email) {
   return {
@@ -16,7 +19,7 @@ function getDemoUser(email) {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem('bright_token'));
+  const [token, setToken] = useState(() => authStorage?.getItem(TOKEN_KEY));
   const [loading, setLoading] = useState(!!token);
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export function AuthProvider({ children }) {
     }
     if (DEMO_ONLY && token === DEMO_STAFF_TOKEN) {
       try {
-        const stored = localStorage.getItem(DEMO_USER_KEY);
+        const stored = authStorage?.getItem(DEMO_USER_KEY);
         setUser(stored ? JSON.parse(stored) : getDemoUser());
       } catch {
         setUser(getDemoUser());
@@ -43,8 +46,8 @@ export function AuthProvider({ children }) {
       })
       .then(setUser)
       .catch(() => {
-        localStorage.removeItem('bright_token');
-        localStorage.removeItem(DEMO_USER_KEY);
+        authStorage?.removeItem(TOKEN_KEY);
+        authStorage?.removeItem(DEMO_USER_KEY);
         setToken(null);
         setUser(null);
       })
@@ -54,8 +57,8 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     if (DEMO_ONLY) {
       const demoUser = getDemoUser(email);
-      localStorage.setItem('bright_token', DEMO_STAFF_TOKEN);
-      localStorage.setItem(DEMO_USER_KEY, JSON.stringify(demoUser));
+      authStorage?.setItem(TOKEN_KEY, DEMO_STAFF_TOKEN);
+      authStorage?.setItem(DEMO_USER_KEY, JSON.stringify(demoUser));
       setToken(DEMO_STAFF_TOKEN);
       setUser(demoUser);
       return { user: demoUser, token: DEMO_STAFF_TOKEN };
@@ -68,7 +71,7 @@ export function AuthProvider({ children }) {
     const data = await parseJson(res);
     if (!res.ok) throw new Error(data.error || 'Login failed');
     if (!data.token) throw new Error('Server returned invalid response. Is the backend running?');
-    localStorage.setItem('bright_token', data.token);
+    authStorage?.setItem(TOKEN_KEY, data.token);
     setToken(data.token);
     setUser(data.user);
     return data;
@@ -77,8 +80,8 @@ export function AuthProvider({ children }) {
   const register = async (email, password, role = 'patient', full_name) => {
     if (DEMO_ONLY) {
       const demoUser = getDemoUser(email);
-      localStorage.setItem('bright_token', DEMO_STAFF_TOKEN);
-      localStorage.setItem(DEMO_USER_KEY, JSON.stringify(demoUser));
+      authStorage?.setItem(TOKEN_KEY, DEMO_STAFF_TOKEN);
+      authStorage?.setItem(DEMO_USER_KEY, JSON.stringify(demoUser));
       setToken(DEMO_STAFF_TOKEN);
       setUser(demoUser);
       return { user: demoUser, token: DEMO_STAFF_TOKEN };
@@ -99,17 +102,32 @@ export function AuthProvider({ children }) {
       throw new Error(msg);
     }
     if (!data.token) throw new Error('Server returned invalid response. Is the backend running?');
-    localStorage.setItem('bright_token', data.token);
+    authStorage?.setItem(TOKEN_KEY, data.token);
     setToken(data.token);
     setUser(data.user);
     return data;
   };
 
   const logout = () => {
-    localStorage.removeItem('bright_token');
-    localStorage.removeItem(DEMO_USER_KEY);
+    authStorage?.removeItem(TOKEN_KEY);
+    authStorage?.removeItem(DEMO_USER_KEY);
     setToken(null);
     setUser(null);
+  };
+
+  /** After guest triage submit: same shape as login/register (7d JWT; stored per tab session). */
+  const applySession = (sessionToken, sessionUser) => {
+    if (!sessionToken || !sessionUser?.id) return;
+    if (DEMO_ONLY) {
+      authStorage?.setItem(TOKEN_KEY, DEMO_STAFF_TOKEN);
+      authStorage?.setItem(DEMO_USER_KEY, JSON.stringify(sessionUser));
+      setToken(DEMO_STAFF_TOKEN);
+      setUser(sessionUser);
+      return;
+    }
+    authStorage?.setItem(TOKEN_KEY, sessionToken);
+    setToken(sessionToken);
+    setUser(sessionUser);
   };
 
   const authFetch = (path, options = {}) => {
@@ -128,7 +146,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, authFetch }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, applySession, authFetch }}>
       {children}
     </AuthContext.Provider>
   );

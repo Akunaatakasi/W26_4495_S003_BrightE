@@ -18,34 +18,39 @@ export default function Layout() {
     <div className={styles.layout}>
       <header className={styles.header}>
         <Link to="/" className={styles.logo}>e - Triage</Link>
+
         <nav className={styles.nav}>
           {!user && (
             <>
               <Link to="/triage/new">Start triage</Link>
-              <Link to="/queue">Queue</Link>
+              <Link to="/triage/new">My request</Link>
+              <Link to="/er-queue">ED queue</Link>
+              <Link to="/about">About</Link>
               <Link to="/staff">Staff</Link>
             </>
           )}
 
           {user?.role === 'nurse' && (
             <>
-              <Link to="/nurse">Queue</Link>
-              <Link to="/queue">Public Queue View</Link>
+              <Link to="/nurse">Triage queue</Link>
+              <Link to="/about">About</Link>
               <Link to="/nurse/audit">Audit log</Link>
             </>
           )}
 
           {user?.role === 'doctor' && (
             <>
-              <Link to="/queue">Queue</Link>
-              <Link to="/doctor">Completed</Link>
+              <Link to="/doctor">Doctor queue</Link>
+              <Link to="/about">About</Link>
             </>
           )}
 
           {user?.role === 'patient' && (
             <>
               <Link to="/triage/new">New triage</Link>
-              <Link to="/patient">My cases</Link>
+              <Link to="/patient">My requests</Link>
+              <Link to="/er-queue">ED queue</Link>
+              <Link to="/about">About</Link>
             </>
           )}
 
@@ -56,8 +61,11 @@ export default function Layout() {
                   {displayName || displayEmail || 'Signed in'}
                   {user?.role ? <span className={styles.userRole}>{user.role}</span> : null}
                 </div>
-                {displayName && displayEmail ? <div className={styles.userEmail}>{displayEmail}</div> : null}
+                {displayName && displayEmail ? (
+                  <div className={styles.userEmail}>{displayEmail}</div>
+                ) : null}
               </div>
+
               <button type="button" className={styles.logout} onClick={handleLogout}>
                 Log out
               </button>

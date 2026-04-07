@@ -1,6 +1,7 @@
 import { WebSocketServer } from 'ws';
 import jwt from 'jsonwebtoken';
 import pool from '../db/pool.js';
+import { registerCaseRoomBroadcast } from './caseRoom.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'bright-triage-dev-secret-change-in-production';
 
@@ -25,6 +26,13 @@ function parseAuth(req) {
     if (payload?.purpose === 'guest_triage' && payload?.email) {
       return { role: 'guest_patient', email: String(payload.email).toLowerCase() };
     }
+    if (payload?.purpose === 'guest_case_access' && payload?.email != null && payload?.caseId != null) {
+      return {
+        role: 'guest_patient',
+        email: String(payload.email).toLowerCase(),
+        caseId: Number(payload.caseId),
+      };
+    }
     return { userId: payload.userId, role: payload.role };
   } catch {
     return null;
@@ -37,15 +45,16 @@ async function canJoinRoom(identity, roomId) {
   const caseId = Number(roomId.replace('case:', ''));
   if (!Number.isFinite(caseId)) return false;
   if (role === 'nurse' || role === 'doctor') return true;
-  if (role !== 'patient' && role !== 'guest_patient') return false;
-  try {
-    if (role === 'patient') {
-      if (!userId) return false;
-      const { rows } = await pool.query('SELECT patient_id FROM triage_cases WHERE id = $1', [caseId]);
-      const owner = rows[0]?.patient_id;
-      return Number(owner) === Number(userId);
-    }
-    if (!email) return false;
+    if (role !== 'patient' && role !== 'guest_patient') return false;
+    try {
+      if (role === 'patient') {
+        if (!userId) return false;
+        const { rows } = await pool.query('SELECT patient_id FROM triage_cases WHERE id = $1', [caseId]);
+        const owner = rows[0]?.patient_id;
+        return Number(owner) === Number(userId);
+      }
+      if (identity.caseId != null && Number(identity.caseId) !== caseId) return false;
+      if (!email) return false;
     const { rows } = await pool.query(
       `SELECT 1
        FROM triage_cases t
@@ -179,5 +188,9 @@ export function setupRealtime(server) {
         });
       }
     });
+  });
+
+  registerCaseRoomBroadcast((caseId, payload) => {
+    broadcastToRoom(`case:${Number(caseId)}`, { ...payload, ts: new Date().toISOString() });
   });
 }
