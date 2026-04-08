@@ -25,11 +25,23 @@ CREATE TABLE IF NOT EXISTS triage_cases (
   overridden_by INTEGER REFERENCES users(id),
   overridden_at TIMESTAMPTZ,
   override_reason TEXT,
-  -- Status: submitted, under_review, completed
-  status VARCHAR(30) DEFAULT 'submitted' CHECK (status IN ('submitted', 'under_review', 'completed')),
+  nurse_recommendation TEXT,
+  watch_review_at TIMESTAMPTZ,
+  doctor_seeking_patient_at TIMESTAMPTZ,
+  doctor_seeking_patient_by INTEGER REFERENCES users(id),
+  doctor_seeking_note TEXT,
+  doctor_seek_acknowledged_at TIMESTAMPTZ,
+  nurse_completed_at TIMESTAMPTZ,
+  nurse_completed_by INTEGER REFERENCES users(id),
+  -- Status: … requested_doctor (doctor queue) … doctor_summoned (doctor asked patient to come)
+  status VARCHAR(30) DEFAULT 'submitted' CHECK (status IN ('submitted', 'under_review', 'nurse_watch', 'requested_doctor', 'doctor_summoned', 'completed', 'withdrawn', 'patient_resolved')),
+  -- Nurse who first opened the case for review (patient sees this as “your nurse”)
+  reviewing_nurse_id INTEGER REFERENCES users(id),
   -- Doctor concludes viewing: removed from completed list, kept in doctor history
   concluded_by INTEGER REFERENCES users(id),
   concluded_at TIMESTAMPTZ,
+  patient_withdrew_at TIMESTAMPTZ,
+  patient_resolved_at TIMESTAMPTZ,
   -- Timestamps for metrics
   submitted_at TIMESTAMPTZ DEFAULT NOW(),
   first_reviewed_at TIMESTAMPTZ,
