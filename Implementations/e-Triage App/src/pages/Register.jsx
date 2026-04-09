@@ -28,7 +28,9 @@ export default function Register() {
     setSubmitting(true);
     try {
       await register(email.trim(), password, role, fullName.trim() || null);
-      navigate('/');
+      if (role === 'nurse') navigate('/nurse', { replace: true });
+      else if (role === 'doctor') navigate('/doctor', { replace: true });
+      else navigate('/', { replace: true });
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {
