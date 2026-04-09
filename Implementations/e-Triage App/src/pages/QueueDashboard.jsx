@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 
 function getLevelColor(level) {
   switch (Number(level)) {
@@ -38,37 +38,61 @@ export default function QueueDashboard() {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState('');
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const intervalRef = useRef(null);
+
+  const loadQueueStats = useCallback(async ({ initial = false } = {}) => {
+    if (!initial) setRefreshing(true);
+    try {
+      const r = await fetch('/api/triage/queue-stats');
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Failed to load queue stats');
+      setStats({
+        waiting: Number(data.waiting || 0),
+        levels: Array.isArray(data.levels) ? data.levels : [],
+        recent: Array.isArray(data.recent) ? data.recent : [],
+      });
+      setLastUpdated(new Date());
+      setError('');
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to load queue stats');
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
 
   useEffect(() => {
-  const loadQueueStats = () => {
-    fetch('/api/triage/queue-stats')
-      .then(async (r) => {
-        const data = await r.json();
-        if (!r.ok) {
-          throw new Error(data.error || 'Failed to load queue stats');
-        }
-        return data;
-      })
-      .then((data) => {
-        setStats({
-          waiting: Number(data.waiting || 0),
-          levels: Array.isArray(data.levels) ? data.levels : [],
-          recent: Array.isArray(data.recent) ? data.recent : [],
-        });
-        setLastUpdated(new Date());
-        setError('');
-      })
-      .catch((err) => {
-        console.error(err);
-        setError(err.message);
-      });
-  };
+    const startInterval = () => {
+      if (intervalRef.current) return;
+      intervalRef.current = setInterval(() => {
+        if (document.visibilityState === 'visible') loadQueueStats({ initial: false });
+      }, 30000);
+    };
+    const stopInterval = () => {
+      if (!intervalRef.current) return;
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    };
 
-  loadQueueStats();
-  const intervalId = setInterval(loadQueueStats, 5000);
+    loadQueueStats({ initial: true });
+    startInterval();
 
-  return () => clearInterval(intervalId);
-}, []);
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        loadQueueStats({ initial: false });
+        startInterval();
+      } else {
+        stopInterval();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      stopInterval();
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [loadQueueStats]);
 
   const maxCount = useMemo(() => {
     if (!stats?.levels?.length) return 1;
@@ -118,11 +142,26 @@ export default function QueueDashboard() {
     Emergency Department Queue
   </h1>
 
-  {lastUpdated && (
-    <div style={{ opacity: 0.7, fontSize: '14px' }}>
-      Last updated: {lastUpdated.toLocaleTimeString()}
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', opacity: 0.85, fontSize: '14px' }}>
+    <button
+      type="button"
+      onClick={() => loadQueueStats({ initial: false })}
+      disabled={refreshing}
+      style={{
+        padding: '6px 10px',
+        borderRadius: '10px',
+        border: '1px solid rgba(255,255,255,0.12)',
+        background: 'rgba(255,255,255,0.06)',
+        color: 'white',
+        cursor: refreshing ? 'not-allowed' : 'pointer',
+      }}
+    >
+      {refreshing ? 'Refreshing…' : 'Refresh'}
+    </button>
+    <div aria-live="polite">
+      {lastUpdated ? `Last updated: ${lastUpdated.toLocaleTimeString()}` : 'Not updated yet'}
     </div>
-  )}
+  </div>
 </div>
       <div
         style={{
