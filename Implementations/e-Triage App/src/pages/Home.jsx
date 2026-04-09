@@ -16,49 +16,35 @@ export default function Home() {
         <p className={styles.subtitle}>
           Optimizing Emergency Department throughput via remote digital triage and synchronous telemedicine interventions.
         </p>
+
         {!user && (
           <div className={styles.actions}>
             <Link to="/triage/new" className={styles.primary}>Start triage</Link>
+            <Link to="/er-queue" className={styles.secondary}>ED queue (public)</Link>
           </div>
         )}
+
         {user?.role === 'nurse' && (
           <div className={styles.actions}>
-            <Link to="/nurse" className={styles.primary}>View triage queue</Link>
+            <Link to="/nurse" className={styles.primary}>Open triage queue</Link>
             <Link to="/nurse/audit" className={styles.secondary}>Audit log</Link>
           </div>
         )}
+
         {user?.role === 'doctor' && (
           <div className={styles.actions}>
-            <Link to="/doctor" className={styles.primary}>View completed triage</Link>
+            <Link to="/doctor" className={styles.primary}>Open doctor queue</Link>
+          </div>
+        )}
+
+        {user?.role === 'patient' && (
+          <div className={styles.actions}>
+            <Link to="/triage/new" className={styles.primary}>Start new triage</Link>
+            <Link to="/patient" className={styles.secondary}>My requests</Link>
+            <Link to="/er-queue" className={styles.secondary}>ED queue (public)</Link>
           </div>
         )}
       </div>
-
-      <section className={styles.features}>
-        <h2 className={styles.featuresTitle}>How it works</h2>
-        <div className={styles.featureGrid}>
-          <article className={styles.featureCard}>
-            <span className={styles.featureIcon} aria-hidden>1</span>
-            <h3>Patients</h3>
-            <p>Submit symptom information and urgency remotely before arriving at the ED.</p>
-          </article>
-          <article className={styles.featureCard}>
-            <span className={styles.featureIcon} aria-hidden>2</span>
-            <h3>Automated triage</h3>
-            <p>Preliminary ESI-like level (1–5) is assigned from your inputs.</p>
-          </article>
-          <article className={styles.featureCard}>
-            <span className={styles.featureIcon} aria-hidden>3</span>
-            <h3>Nurse oversight</h3>
-            <p>Nurses review cases, override triage levels, and complete assessments—human-in-the-loop.</p>
-          </article>
-          <article className={styles.featureCard}>
-            <span className={styles.featureIcon} aria-hidden>4</span>
-            <h3>Audit & research</h3>
-            <p>All actions are logged for accountability and research.</p>
-          </article>
-        </div>
-      </section>
     </div>
   );
 }
