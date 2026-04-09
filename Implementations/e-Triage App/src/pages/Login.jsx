@@ -14,8 +14,11 @@ export default function Login() {
     e.preventDefault();
     setError('');
     try {
-      await login(email, password);
-      navigate('/');
+      const data = await login(email, password);
+      const role = data?.user?.role;
+      if (role === 'nurse') navigate('/nurse', { replace: true });
+      else if (role === 'doctor') navigate('/doctor', { replace: true });
+      else navigate('/', { replace: true });
     } catch (err) {
       setError(err.message || 'Login failed');
     }
